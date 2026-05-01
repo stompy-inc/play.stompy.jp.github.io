@@ -1,0 +1,1106 @@
+[
+  {
+    "name": "Tarek Voss",
+    "slug": "tarek-voss",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Furnace Worker",
+    "age": 41,
+    "traits": [
+      "scaled",
+      "worker",
+      "essential_worker",
+      "dependents",
+      "heat_token",
+      "scale_inspection_current",
+      "special_body_need",
+      "clear_loyalty"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Ilya Renn",
+    "slug": "ilya-renn",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Postal Courier",
+    "age": 52,
+    "traits": [
+      "avian",
+      "worker",
+      "essential_worker",
+      "flight_permit",
+      "flight_suspended",
+      "decorated_labor"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Nomi Pell",
+    "slug": "nomi-pell",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "Nursery Cook",
+    "age": 28,
+    "traits": [
+      "felid",
+      "children",
+      "infant",
+      "milk",
+      "worker",
+      "essential_worker",
+      "clear_loyalty"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Borun Hale",
+    "slug": "borun-hale",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Apprentice Mason",
+    "age": 17,
+    "traits": [
+      "horned",
+      "medicine",
+      "elder_care",
+      "body_permit_expired",
+      "horn_registration_mismatch"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Rava Skel",
+    "slug": "rava-skel",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Office Runner",
+    "age": 33,
+    "traits": [
+      "mothkin",
+      "smudged_book",
+      "unclear_loyalty",
+      "worker"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Mira Volkov",
+    "slug": "mira-volkov",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "School Teacher",
+    "age": 34,
+    "traits": [
+      "felid",
+      "teacher",
+      "district3",
+      "children",
+      "milk",
+      "unclear_loyalty",
+      "old_song"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Olan Reed",
+    "slug": "olan-reed",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Clinic Assistant",
+    "age": 46,
+    "traits": [
+      "amphibian",
+      "medical",
+      "worker",
+      "dependents",
+      "moisture_ration",
+      "no_clinic_stamp",
+      "special_body_need"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Varo Kess",
+    "slug": "varo-kess",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Retired Watchman",
+    "age": 58,
+    "traits": [
+      "canid",
+      "district3",
+      "medicine",
+      "decorated_labor",
+      "sealed_record",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Sera Moth",
+    "slug": "sera-moth",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Night Textile Worker",
+    "age": 29,
+    "traits": [
+      "mothkin",
+      "worker",
+      "district5",
+      "lamp_oil",
+      "night_labor_permit",
+      "old_district_seal",
+      "special_body_need"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Nael Orin",
+    "slug": "nael-orin",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Boiler Clerk",
+    "age": 40,
+    "traits": [
+      "scaled",
+      "district3",
+      "body_permit_discrepancy",
+      "worker",
+      "scale_inspection_current"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Breka Tull",
+    "slug": "breka-tull",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Seamstress",
+    "age": 61,
+    "traits": [
+      "horned",
+      "medicine",
+      "elder_care",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Kori Nale",
+    "slug": "kori-nale",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Roof Medic",
+    "age": 27,
+    "traits": [
+      "avian",
+      "district3",
+      "medical",
+      "unclear_loyalty",
+      "flight_permit",
+      "curfew"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Dima Sol",
+    "slug": "dima-sol",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Rail Switchman",
+    "age": 44,
+    "traits": [
+      "canid",
+      "worker",
+      "essential_worker",
+      "children",
+      "clear_loyalty"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Elya Moss",
+    "slug": "elya-moss",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Water Inspector",
+    "age": 48,
+    "traits": [
+      "amphibian",
+      "large_family",
+      "dependents",
+      "moisture_ration",
+      "no_clinic_stamp",
+      "special_body_need"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Arko Vale",
+    "slug": "arko-vale",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Book Binder",
+    "age": 36,
+    "traits": [
+      "scaled",
+      "heat_token",
+      "scale_inspection_missing",
+      "unclear_loyalty",
+      "archive_adjacent",
+      "special_body_need"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Lenka Ori",
+    "slug": "lenka-ori",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Apartment Warden",
+    "age": 24,
+    "traits": [
+      "mothkin",
+      "district3",
+      "sealed_door",
+      "lamp_oil",
+      "night_labor_permit"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Palo Venn",
+    "slug": "palo-venn",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "Clock Repairer",
+    "age": 50,
+    "traits": [
+      "felid",
+      "district5",
+      "milk",
+      "unclear_loyalty",
+      "craft"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Eru Hale",
+    "slug": "eru-hale",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Retired Stone Cutter",
+    "age": 72,
+    "traits": [
+      "horned",
+      "elder",
+      "medicine",
+      "relative_reported",
+      "horn_registration_mismatch"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Rusk Voss",
+    "slug": "rusk-voss",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Foundry Foreman",
+    "age": 39,
+    "traits": [
+      "scaled",
+      "worker",
+      "essential_worker",
+      "dependents",
+      "heat_token",
+      "scale_inspection_current",
+      "relative_laborer"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Anya Kor",
+    "slug": "anya-kor",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Clinic Porter",
+    "age": 31,
+    "traits": [
+      "amphibian",
+      "district3",
+      "neighbor_report",
+      "medical",
+      "moisture_ration",
+      "clinic_seal",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Sava Rune",
+    "slug": "sava-rune",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Transit Sweeper",
+    "age": 22,
+    "traits": [
+      "canid",
+      "district3",
+      "smudged_book",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Ular Min",
+    "slug": "ular-min",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Office Locksmith",
+    "age": 50,
+    "traits": [
+      "mothkin",
+      "audit_probe",
+      "bureau",
+      "lamp_oil",
+      "night_labor_permit"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Ilar Moss",
+    "slug": "ilar-moss",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Census Copyist",
+    "age": 30,
+    "traits": [
+      "avian",
+      "audit_probe",
+      "bureau",
+      "feather_record_current"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Rem Vire",
+    "slug": "rem-vire",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Dock Painter",
+    "age": 37,
+    "traits": [
+      "avian",
+      "worker",
+      "children",
+      "flight_permit",
+      "flight_suspended",
+      "feather_renewal"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Dara Kole",
+    "slug": "dara-kole",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "Milk Depot Clerk",
+    "age": 45,
+    "traits": [
+      "felid",
+      "milk",
+      "restricted_milk",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Bek Tavor",
+    "slug": "bek-tavor",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Boiler Watch",
+    "age": 64,
+    "traits": [
+      "scaled",
+      "district5",
+      "child_care",
+      "worker",
+      "scale_inspection_missing"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Niska Vel",
+    "slug": "niska-vel",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Book Mender",
+    "age": 25,
+    "traits": [
+      "mothkin",
+      "neighbor_report",
+      "archive_adjacent",
+      "unclear_loyalty",
+      "lamp_oil",
+      "night_labor_permit"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Elu Volkov",
+    "slug": "elu-volkov",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "School Child",
+    "age": 12,
+    "traits": [
+      "felid",
+      "children",
+      "district3",
+      "milk",
+      "teacher_family"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Mava Hale",
+    "slug": "mava-hale",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Retired Launder",
+    "age": 70,
+    "traits": [
+      "horned",
+      "elder",
+      "medicine",
+      "relative_reported",
+      "horn_registration_mismatch"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Sira Reed",
+    "slug": "sira-reed",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Clinic Nurse",
+    "age": 38,
+    "traits": [
+      "amphibian",
+      "medical",
+      "worker",
+      "dependents",
+      "moisture_ration",
+      "clinic_seal",
+      "special_body_need"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Runo Kess",
+    "slug": "runo-kess",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Watchman's Spouse",
+    "age": 56,
+    "traits": [
+      "canid",
+      "district3",
+      "medicine",
+      "relative_reported",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Ilva Renn",
+    "slug": "ilva-renn",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Message Clerk",
+    "age": 23,
+    "traits": [
+      "avian",
+      "flight_permit",
+      "flight_suspended",
+      "secret_request",
+      "unclear_loyalty"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Kava Norr",
+    "slug": "kava-norr",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "School Teacher",
+    "age": 32,
+    "traits": [
+      "felid",
+      "teacher",
+      "children",
+      "milk",
+      "clear_loyalty"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Daren Sol",
+    "slug": "daren-sol",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Signal Worker",
+    "age": 44,
+    "traits": [
+      "canid",
+      "worker",
+      "essential_worker",
+      "children",
+      "milk",
+      "decorated_labor"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Vela Osk",
+    "slug": "vela-osk",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "School Teacher",
+    "age": 39,
+    "traits": [
+      "avian",
+      "teacher",
+      "district3",
+      "children",
+      "milk",
+      "unclear_loyalty",
+      "flight_permit",
+      "flight_suspended"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Nara Venn",
+    "slug": "nara-venn",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Nursery Lamp Keeper",
+    "age": 26,
+    "traits": [
+      "mothkin",
+      "worker",
+      "essential_worker",
+      "children",
+      "lamp_oil",
+      "night_labor_permit",
+      "special_body_need"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Pavel Orsk",
+    "slug": "pavel-orsk",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Street Vendor",
+    "age": 46,
+    "traits": [
+      "scaled",
+      "vendor",
+      "district5",
+      "no_screening",
+      "old_district_seal",
+      "heat_token",
+      "scale_inspection_current"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Yara Sul",
+    "slug": "yara-sul",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Messenger",
+    "age": 19,
+    "traits": [
+      "avian",
+      "youth",
+      "curfew",
+      "unclear_loyalty",
+      "secret_request",
+      "flight_permit",
+      "flight_suspended"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Noro Isk",
+    "slug": "noro-isk",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Street Vendor",
+    "age": 43,
+    "traits": [
+      "canid",
+      "vendor",
+      "children",
+      "unclear_loyalty",
+      "no_screening"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Mael Vint",
+    "slug": "mael-vint",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Night Janitor",
+    "age": 57,
+    "traits": [
+      "horned",
+      "medicine",
+      "ill_dependent",
+      "secret_request",
+      "horn_registration_current"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Kessa Lume",
+    "slug": "kessa-lume",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Lamp Clerk",
+    "age": 35,
+    "traits": [
+      "amphibian",
+      "lamp_oil",
+      "no_night_labor_permit",
+      "old_district_seal",
+      "elder_care"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Lio Moth",
+    "slug": "lio-moth",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Factory Sibling",
+    "age": 21,
+    "traits": [
+      "mothkin",
+      "relative_reported",
+      "lamp_oil",
+      "night_labor_permit",
+      "old_district_seal",
+      "district5"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Sena Voss",
+    "slug": "sena-voss",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "School Child",
+    "age": 8,
+    "traits": [
+      "scaled",
+      "children",
+      "heat_token",
+      "scale_inspection_missing",
+      "relative_laborer",
+      "special_body_need"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Vel Korr",
+    "slug": "vel-korr",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Audit Indexer",
+    "age": 48,
+    "traits": [
+      "mothkin",
+      "audit_probe",
+      "bureau",
+      "lamp_oil",
+      "night_labor_permit"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Drava Pels",
+    "slug": "drava-pels",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Window Inspector",
+    "age": 55,
+    "traits": [
+      "avian",
+      "audit_probe",
+      "flight_permit",
+      "flight_suspended",
+      "bureau"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Toma Grak",
+    "slug": "toma-grak",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Records Hauler",
+    "age": 42,
+    "traits": [
+      "horned",
+      "large_family",
+      "medicine",
+      "body_permit_discrepancy",
+      "horn_registration_mismatch",
+      "worker"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Korin Hal",
+    "slug": "korin-hal",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Kiln Sweeper",
+    "age": 19,
+    "traits": [
+      "scaled",
+      "worker",
+      "heat_token",
+      "scale_inspection_current",
+      "dependents"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Sava Pell",
+    "slug": "sava-pell",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "Night Clerk",
+    "age": 26,
+    "traits": [
+      "felid",
+      "milk",
+      "worker",
+      "unclear_loyalty",
+      "body_permit_discrepancy"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Nera Dax",
+    "slug": "nera-dax",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Depot Porter",
+    "age": 33,
+    "traits": [
+      "canid",
+      "worker",
+      "essential_worker",
+      "district3"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Aro Venn",
+    "slug": "aro-venn",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Grain Sorter",
+    "age": 40,
+    "traits": [
+      "avian",
+      "worker",
+      "feather_record_current"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Velu Moss",
+    "slug": "velu-moss",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Mason Widow",
+    "age": 47,
+    "traits": [
+      "horned",
+      "medicine",
+      "elder_care"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Brina Lark",
+    "slug": "brina-lark",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Canal Tester",
+    "age": 54,
+    "traits": [
+      "amphibian",
+      "worker",
+      "moisture_ration",
+      "clinic_seal",
+      "unclear_loyalty",
+      "body_permit_discrepancy",
+      "dependents"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Tem Orsk",
+    "slug": "tem-orsk",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Lamp Auditor",
+    "age": 61,
+    "traits": [
+      "mothkin",
+      "lamp_oil",
+      "night_labor_permit"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Miro Fall",
+    "slug": "miro-fall",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Kiln Sweeper",
+    "age": 68,
+    "traits": [
+      "scaled",
+      "worker",
+      "heat_token",
+      "scale_inspection_current",
+      "district3"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Lessa Mor",
+    "slug": "lessa-mor",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "Night Clerk",
+    "age": 22,
+    "traits": [
+      "felid",
+      "milk",
+      "worker"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Hadan Skel",
+    "slug": "hadan-skel",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Depot Porter",
+    "age": 29,
+    "traits": [
+      "canid",
+      "worker",
+      "essential_worker",
+      "unclear_loyalty",
+      "body_permit_discrepancy"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Orri Vaun",
+    "slug": "orri-vaun",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Grain Sorter",
+    "age": 36,
+    "traits": [
+      "avian",
+      "worker",
+      "feather_record_current",
+      "dependents"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Pola Nix",
+    "slug": "pola-nix",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Mason Widow",
+    "age": 43,
+    "traits": [
+      "horned",
+      "medicine",
+      "elder_care"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Soren Ibb",
+    "slug": "soren-ibb",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Canal Tester",
+    "age": 50,
+    "traits": [
+      "amphibian",
+      "worker",
+      "moisture_ration",
+      "clinic_seal",
+      "district3"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Kal Vesk",
+    "slug": "kal-vesk",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Lamp Auditor",
+    "age": 57,
+    "traits": [
+      "mothkin",
+      "lamp_oil",
+      "night_labor_permit",
+      "unclear_loyalty",
+      "body_permit_discrepancy"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Dena Rill",
+    "slug": "dena-rill",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Kiln Sweeper",
+    "age": 64,
+    "traits": [
+      "scaled",
+      "worker",
+      "heat_token",
+      "scale_inspection_current"
+    ],
+    "bodyClassCode": "SCL-07"
+  },
+  {
+    "name": "Pavel Tusk",
+    "slug": "pavel-tusk",
+    "kind": "felid",
+    "bodyClass": "Felid",
+    "job": "Night Clerk",
+    "age": 71,
+    "traits": [
+      "felid",
+      "milk",
+      "worker",
+      "dependents"
+    ],
+    "bodyClassCode": "FEL-03"
+  },
+  {
+    "name": "Mara Sol",
+    "slug": "mara-sol",
+    "kind": "canid",
+    "bodyClass": "Canid",
+    "job": "Depot Porter",
+    "age": 25,
+    "traits": [
+      "canid",
+      "worker",
+      "essential_worker"
+    ],
+    "bodyClassCode": "CND-04"
+  },
+  {
+    "name": "Niko Ren",
+    "slug": "niko-ren",
+    "kind": "avian",
+    "bodyClass": "Avian",
+    "job": "Grain Sorter",
+    "age": 32,
+    "traits": [
+      "avian",
+      "worker",
+      "feather_record_current",
+      "district3",
+      "unclear_loyalty",
+      "body_permit_discrepancy"
+    ],
+    "bodyClassCode": "AVN-02"
+  },
+  {
+    "name": "Yel Drav",
+    "slug": "yel-drav",
+    "kind": "horned",
+    "bodyClass": "Horned",
+    "job": "Mason Widow",
+    "age": 39,
+    "traits": [
+      "horned",
+      "medicine",
+      "elder_care"
+    ],
+    "bodyClassCode": "HRN-06"
+  },
+  {
+    "name": "Borin Kett",
+    "slug": "borin-kett",
+    "kind": "amphibian",
+    "bodyClass": "Amphibian",
+    "job": "Canal Tester",
+    "age": 46,
+    "traits": [
+      "amphibian",
+      "worker",
+      "moisture_ration",
+      "clinic_seal"
+    ],
+    "bodyClassCode": "AMP-05"
+  },
+  {
+    "name": "Anu Hale",
+    "slug": "anu-hale",
+    "kind": "mothkin",
+    "bodyClass": "Mothkin",
+    "job": "Lamp Auditor",
+    "age": 53,
+    "traits": [
+      "mothkin",
+      "lamp_oil",
+      "night_labor_permit",
+      "dependents"
+    ],
+    "bodyClassCode": "MTH-08"
+  },
+  {
+    "name": "Rava Minn",
+    "slug": "rava-minn",
+    "kind": "scaled",
+    "bodyClass": "Scaled",
+    "job": "Kiln Sweeper",
+    "age": 60,
+    "traits": [
+      "scaled",
+      "worker",
+      "heat_token",
+      "scale_inspection_current",
+      "unclear_loyalty",
+      "body_permit_discrepancy"
+    ],
+    "bodyClassCode": "SCL-07"
+  }
+]
