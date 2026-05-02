@@ -1167,7 +1167,6 @@
         closeDirectives: "閉じる",
         fields: {
           kind: "分類",
-          bodyClass: "身体区分",
           age: "年齢",
           job: "職業",
           district: "地区",
@@ -1200,7 +1199,6 @@
         },
         citizenActions: "市民への処理",
         officeLog: "窓口記録",
-        recordsFinal: "記録は確定済み",
         noEntries: "記録なし。スタンプは待っている。",
         goHome: "帰宅する",
         nextShift: "次の勤務",
@@ -1227,12 +1225,9 @@
         shareStats: "承認: {approved} / 密告: {reported} / 紛失: {lostFiles}",
         warnings: {
           rationBook: "配給手帳: {value}",
-        bodyPermit: "身体許可証: {value}",
+          bodyPermit: "身体許可証: {value}",
           documentIssue: "{label}: {value}",
-          loyaltyUnclear: "忠誠不明瞭",
-          highSuspicion: "疑義高",
-          directiveRecord: "通達: 記録せよ",
-          directiveDenyReport: "通達: 拒否/記録"
+          loyaltyUnclear: "忠誠不明瞭"
         },
         changeLabels: {
           trust: "信頼",
@@ -1965,7 +1960,6 @@
       closeDirectives: "FERMER",
       fields: {
         kind: "Espèce",
-        bodyClass: "Classe",
         age: "Âge",
         job: "Métier",
         district: "District",
@@ -1998,7 +1992,6 @@
       },
       citizenActions: "Traitement du citoyen",
       officeLog: "REGISTRE",
-      recordsFinal: "DOSSIERS DÉFINITIFS",
       noEntries: "Aucune entrée. Le tampon attend.",
       goHome: "RENTRER",
       nextShift: "POSTE SUIVANT",
@@ -2030,10 +2023,7 @@
         rationBook: "Carnet: {value}",
         bodyPermit: "Permis: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "Loyauté floue",
-        highSuspicion: "Soupçon élevé",
-        directiveRecord: "Directive: noter",
-        directiveDenyReport: "Directive: refuser/noter"
+        loyaltyUnclear: "Loyauté floue"
       },
       changeLabels: {
         trust: "Conf.",
@@ -2767,7 +2757,6 @@
       closeDirectives: "SCHLIESSEN",
       fields: {
         kind: "Art",
-        bodyClass: "Klasse",
         age: "Alter",
         job: "Beruf",
         district: "Bezirk",
@@ -2800,7 +2789,6 @@
       },
       citizenActions: "Bürger bearbeiten",
       officeLog: "AMTSLOG",
-      recordsFinal: "AKTEN SIND ENDGÜLTIG",
       noEntries: "Keine Einträge. Der Stempel wartet.",
       goHome: "NACH HAUSE",
       nextShift: "NÄCHSTE SCHICHT",
@@ -2832,10 +2820,7 @@
         rationBook: "Buch: {value}",
         bodyPermit: "Pass: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "Loyalität unklar",
-        highSuspicion: "Hoher Verdacht",
-        directiveRecord: "Direktive: notieren",
-        directiveDenyReport: "Direktive: abweisen/notieren"
+        loyaltyUnclear: "Loyalität unklar"
       },
       changeLabels: {
         trust: "Staat",
@@ -3570,7 +3555,6 @@
       closeDirectives: "关闭",
       fields: {
         kind: "种类",
-        bodyClass: "身体分类",
         age: "年龄",
         job: "职业",
         district: "地区",
@@ -3603,7 +3587,6 @@
       },
       citizenActions: "公民处理",
       officeLog: "窗口记录",
-      recordsFinal: "记录已定",
       noEntries: "无记录。印章在等待。",
       goHome: "回家",
       nextShift: "下一班次",
@@ -3635,10 +3618,7 @@
         rationBook: "配给簿: {value}",
         bodyPermit: "身体许可证: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "忠诚不明",
-        highSuspicion: "疑点高",
-        directiveRecord: "通令: 记录",
-        directiveDenyReport: "通令: 拒绝/记录"
+        loyaltyUnclear: "忠诚不明"
       },
       changeLabels: {
         trust: "信任",
@@ -4374,7 +4354,6 @@
       closeDirectives: "Cerrar",
       fields: {
         kind: "tipo",
-        bodyClass: "clase corporal",
         age: "edad",
         job: "oficio",
         district: "distrito",
@@ -4407,7 +4386,6 @@
       },
       citizenActions: "Acciones",
       officeLog: "Registro de ventanilla",
-      recordsFinal: "Registro fijado",
       noEntries: "Sin entradas. El sello espera.",
       goHome: "Ir a casa",
       nextShift: "Siguiente turno",
@@ -4439,10 +4417,7 @@
         rationBook: "Cartilla: {value}",
         bodyPermit: "Permiso corporal: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "Lealtad dudosa",
-        highSuspicion: "Alta sospecha",
-        directiveRecord: "Orden: registrar",
-        directiveDenyReport: "Orden: rechazar/registrar"
+        loyaltyUnclear: "Lealtad dudosa"
       },
       changeLabels: {
         trust: "Fe",
@@ -5179,7 +5154,6 @@
       closeDirectives: "Fechar",
       fields: {
         kind: "tipo",
-        bodyClass: "classe corporal",
         age: "idade",
         job: "ofício",
         district: "distrito",
@@ -5212,7 +5186,6 @@
       },
       citizenActions: "Ações",
       officeLog: "Registro do guichê",
-      recordsFinal: "Registro fixado",
       noEntries: "Sem entradas. O selo espera.",
       goHome: "Ir para casa",
       nextShift: "Próximo turno",
@@ -5244,10 +5217,7 @@
         rationBook: "Caderneta: {value}",
         bodyPermit: "Passe corporal: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "Lealdade duvidosa",
-        highSuspicion: "Alta suspeita",
-        directiveRecord: "Ordem: registrar",
-        directiveDenyReport: "Ordem: recusar/registrar"
+        loyaltyUnclear: "Lealdade duvidosa"
       },
       changeLabels: {
         trust: "Fé",
@@ -5985,7 +5955,6 @@
       closeDirectives: "Закрыть",
       fields: {
         kind: "вид",
-        bodyClass: "класс тела",
         age: "возраст",
         job: "работа",
         district: "округ",
@@ -6018,7 +5987,6 @@
       },
       citizenActions: "Действия",
       officeLog: "Журнал окна",
-      recordsFinal: "Запись закреплена",
       noEntries: "Записей нет. Печать ждет.",
       goHome: "Домой",
       nextShift: "Следующая смена",
@@ -6050,10 +6018,7 @@
         rationBook: "Книжка: {value}",
         bodyPermit: "Телесное разрешение: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "Лояльность неясна",
-        highSuspicion: "Высокое подозрение",
-        directiveRecord: "Приказ: записать",
-        directiveDenyReport: "Приказ: отказ/запись"
+        loyaltyUnclear: "Лояльность неясна"
       },
       changeLabels: {
         trust: "Доверие",
@@ -6792,7 +6757,6 @@
       closeDirectives: "닫기",
       fields: {
         kind: "종",
-        bodyClass: "신체 분류",
         age: "나이",
         job: "직업",
         district: "구역",
@@ -6825,7 +6789,6 @@
       },
       citizenActions: "처리",
       officeLog: "창구 기록",
-      recordsFinal: "기록 확정",
       noEntries: "기록 없음. 도장이 기다립니다.",
       goHome: "집으로",
       nextShift: "다음 근무",
@@ -6857,10 +6820,7 @@
         rationBook: "배급증: {value}",
         bodyPermit: "신체 허가증: {value}",
         documentIssue: "{label}: {value}",
-        loyaltyUnclear: "충성 불명",
-        highSuspicion: "의심 높음",
-        directiveRecord: "지침: 기록",
-        directiveDenyReport: "지침: 거부/기록"
+        loyaltyUnclear: "충성 불명"
       },
       changeLabels: {
         trust: "신뢰",

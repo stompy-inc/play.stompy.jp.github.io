@@ -31,7 +31,6 @@ These Kinds are not one-to-one metaphors for real races, ethnicities, religions,
 Citizen cards use cold office language:
 
 - Kind
-- Body Class
 - Body Permit
 - Ration Book
 - Kind-specific documents such as Scale Inspection, Flight Permit, Horn Registration, Moisture Ration Permit, Night Labor Permit, and Feather Renewal Record

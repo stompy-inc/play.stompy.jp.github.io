@@ -940,8 +940,7 @@ h1 {
   color: var(--paper-light);
 }
 
-.cover-footer-controls,
-.screen-footer-controls {
+.cover-footer-controls {
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -951,21 +950,12 @@ h1 {
   padding: 2px 0 14px;
 }
 
-.screen-footer-controls {
-  position: relative;
-  z-index: 1;
-  margin-top: auto;
-  padding: 16px 0 14px;
-}
-
-.cover-footer-controls .icon-button,
-.screen-footer-controls .icon-button {
+.cover-footer-controls .icon-button {
   min-width: 46px;
   min-height: 34px;
 }
 
-.cover-footer-controls .language-tabs,
-.screen-footer-controls .language-tabs {
+.cover-footer-controls .language-tabs {
   min-width: 268px;
 }
 
@@ -1836,34 +1826,6 @@ h1 {
   background: repeating-linear-gradient(0deg, transparent 0 7px, rgba(23, 18, 13, 0.08) 7px 8px);
 }
 
-.portrait span {
-  position: absolute;
-  left: 8px;
-  bottom: 7px;
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border: 4px double var(--deep-red);
-  border-radius: 50%;
-  color: var(--deep-red);
-  font-size: 1.7rem;
-  transform: rotate(-12deg);
-}
-
-.kind-mark {
-  position: absolute;
-  right: 6px;
-  top: 6px;
-  z-index: 2;
-  padding: 2px 4px;
-  border: 1px solid rgba(23, 18, 13, 0.58);
-  color: var(--ink);
-  background: rgba(234, 219, 184, 0.54);
-  font-style: normal;
-  font-size: 0.58rem;
-}
-
 .kind-scaled::after {
   background:
     radial-gradient(circle at 28% 30%, rgba(23, 18, 13, 0.18) 0 2px, transparent 3px),
@@ -2213,7 +2175,7 @@ dd {
 .icon-approve::before {
   position: absolute;
   left: 9px;
-  top: 2px;
+  top: -6px;
   width: 16px;
   height: 28px;
   border-right: 8px solid currentColor;
@@ -2225,7 +2187,7 @@ dd {
 .icon-deny::before,
 .icon-deny::after {
   position: absolute;
-  left: 4px;
+  left: 0;
   top: 14px;
   width: 34px;
   height: 8px;
@@ -2265,8 +2227,8 @@ dd {
 
 .icon-lose::before {
   position: absolute;
-  left: 2px;
-  top: 10px;
+  left: -6px;
+  top: 4px;
   width: 36px;
   height: 20px;
   border: 4px solid currentColor;
@@ -2276,8 +2238,8 @@ dd {
 
 .icon-lose::after {
   position: absolute;
-  left: 4px;
-  top: 5px;
+  left: -4px;
+  top: -1px;
   width: 17px;
   height: 8px;
   border: 4px solid currentColor;
@@ -2330,12 +2292,6 @@ dd {
   color: var(--deep-red);
   border-bottom: 2px solid rgba(23, 18, 13, 0.25);
   padding-bottom: 5px;
-}
-
-.log-head span:last-child {
-  border: 2px solid rgba(95, 25, 21, 0.55);
-  padding: 1px 4px;
-  transform: rotate(-2deg);
 }
 
 .log-panel ol {

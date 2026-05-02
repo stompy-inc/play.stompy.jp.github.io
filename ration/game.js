@@ -482,7 +482,6 @@ function render() {
       ${state.phase === "weekend" ? renderWeekend() : ""}
       ${state.phase === "finalAudit" ? renderFinalAudit() : ""}
       ${state.phase === "ending" ? renderEnding() : ""}
-      ${state.phase === "intro" ? "" : renderScreenFooterControls()}
     </section>
   `;
 
@@ -507,15 +506,6 @@ function renderHeader() {
         <strong>12</strong>
       </div>
     </header>
-  `;
-}
-
-function renderScreenFooterControls() {
-  return `
-    <div class="screen-footer-controls" aria-label="${ui("screenControls", "Screen controls")}">
-      ${renderLanguageTabs()}
-      <button class="icon-button sound-toggle" type="button" aria-label="${ui("toggleSound", "Toggle sound")}">${getSoundOn() ? ui("soundOn", "VOL") : ui("soundOff", "MUTE")}</button>
-    </div>
   `;
 }
 
@@ -832,12 +822,9 @@ function renderCitizenCard() {
               <div class="portrait-body"></div>
             `}
             <div class="portrait-lines"></div>
-            <i class="kind-mark">${getKindCode(citizen)}</i>
-            <span>${citizen.district}</span>
           </div>
           <dl class="citizen-fields">
             ${field(ui("fields.kind", "Kind"), getKindLabel(citizen))}
-            ${field(ui("fields.bodyClass", "Body Class"), citizen.bodyClassCode || citizen.bodyClass)}
             ${field(ui("fields.age", "Age"), citizen.age)}
             ${field(ui("fields.job", "Job"), localCitizenValue("job", citizen.job))}
             ${field(ui("fields.district", "District"), citizen.district)}
@@ -851,7 +838,7 @@ function renderCitizenCard() {
           </dl>
         </div>
         ${storyEcho ? `<p class="story-echo">${translateText(storyEcho)}</p>` : ""}
-        <div class="review-tags">${warnings.map(warn => `<span>${warn}</span>`).join("")}</div>
+        ${warnings.length ? `<div class="review-tags">${warnings.map(warn => `<span>${warn}</span>`).join("")}</div>` : ""}
       </article>
     </section>
   `;
@@ -884,11 +871,6 @@ function getKindLabel(citizen) {
   const kind = RATION_DATA.citizenKinds && RATION_DATA.citizenKinds[citizen.kind];
   const label = kind ? kind.label : (citizen.bodyClass || citizen.kind || "Unfiled");
   return localText(`kindLabels.${citizen.kind}`, label);
-}
-
-function getKindCode(citizen) {
-  const kind = RATION_DATA.citizenKinds && RATION_DATA.citizenKinds[citizen.kind];
-  return kind ? kind.icon : "UNK";
 }
 
 function getKindDocumentLabel(citizen) {
@@ -927,13 +909,13 @@ function renderActionButtons() {
 function renderLog() {
   const shiftId = Math.min(state.currentShift, RATION_DATA.campaignConfig.totalShifts);
   const entries = state.history
-    .filter(entry => entry.shift === shiftId);
+    .filter(entry => entry.shift === shiftId)
+    .slice(0, 1);
 
   return `
     <section class="log-panel">
       <div class="log-head">
         <span>${ui("officeLog", "OFFICE LOG")}</span>
-        <span>${ui("recordsFinal", "RECORDS ARE FINAL")}</span>
       </div>
       <ol>
         ${entries.map(entry => `
@@ -1924,7 +1906,6 @@ function getCitizenById(id) {
 }
 
 function getWarnings(citizen) {
-  const shift = getCurrentShift();
   const warnings = [];
   if (citizen.rationBook !== "Valid") warnings.push(ui("warnings.rationBook", `Ration book: ${citizen.rationBook}`, { value: localCitizenValue("rationBook", citizen.rationBook) }));
   if (citizen.bodyPermit !== "Valid") warnings.push(ui("warnings.bodyPermit", `Body Permit: ${citizen.bodyPermit}`, { value: localCitizenValue("bodyPermit", citizen.bodyPermit) }));
@@ -1935,10 +1916,7 @@ function getWarnings(citizen) {
     }));
   }
   if (citizen.loyaltyRecord === "Unclear") warnings.push(ui("warnings.loyaltyUnclear", "Loyalty unclear"));
-  if (citizen.riskLevel >= 4) warnings.push(ui("warnings.highSuspicion", "High suspicion"));
-  if (shouldBeReported(citizen, shift)) warnings.push(ui("warnings.directiveRecord", "Directive: record"));
-  if (shouldBeDeniedOrReported(citizen, shift)) warnings.push(ui("warnings.directiveDenyReport", "Directive: deny/report"));
-  return warnings.slice(0, 6);
+  return warnings.slice(0, 4);
 }
 
 function getStoryEcho(citizen) {
