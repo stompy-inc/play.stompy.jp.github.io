@@ -43,8 +43,29 @@ let audioContext = null;
 
 const SUPPORTED_LANGUAGES = ["en", "ja", "fr", "de", "zh", "es", "pt", "ru", "ko"];
 
+function getDefaultLanguage() {
+  const candidates = [];
+
+  if (typeof navigator !== "undefined") {
+    if (Array.isArray(navigator.languages)) candidates.push(...navigator.languages);
+    if (navigator.language) candidates.push(navigator.language);
+    if (navigator.userLanguage) candidates.push(navigator.userLanguage);
+  }
+
+  for (const candidate of candidates) {
+    const normalized = String(candidate || "").trim().toLowerCase().replace(/_/g, "-");
+    if (!normalized) continue;
+    if (SUPPORTED_LANGUAGES.includes(normalized)) return normalized;
+
+    const base = normalized.split("-")[0];
+    if (SUPPORTED_LANGUAGES.includes(base)) return base;
+  }
+
+  return "en";
+}
+
 function getLanguage() {
-  const lang = progress && progress.settings ? progress.settings.lang : "en";
+  const lang = progress && progress.settings ? progress.settings.lang : getDefaultLanguage();
   return SUPPORTED_LANGUAGES.includes(lang) ? lang : "en";
 }
 
@@ -801,11 +822,7 @@ function renderCitizenCard() {
       <article class="citizen-card">
         ${state.pendingStamp ? `<div class="action-stamp stamp-${stampClass}">${localStamp(state.pendingStamp)}</div>` : ""}
         <div class="dossier-top">
-          <div>
-            <p class="dossier-kicker">${ui("citizenDossier", "CIVIC BODY RECORD")}</p>
-            <h2>${citizen.name.toUpperCase()}</h2>
-          </div>
-          <div class="file-no">${ui("fileNo", "FILE NO.")} ${makeFileNumber(citizen)}</div>
+          <h2>${citizen.name.toUpperCase()}</h2>
         </div>
         ${renderCitizenStatement(citizen)}
         <div class="citizen-layout">
@@ -2104,12 +2121,13 @@ function playSound(type) {
 }
 
 function loadProgress() {
+  const defaultLang = getDefaultLanguage();
   const fallback = {
     totalRuns: 0,
     bestSurvivedShift: 0,
     unlockedEndings: [],
     lastEnding: "",
-    settings: { soundOn: true, lang: "en" },
+    settings: { soundOn: true, lang: defaultLang },
     tutorialSeen: false
   };
 
@@ -2124,7 +2142,7 @@ function loadProgress() {
         ...fallback.settings,
         ...(saved.settings || {}),
         soundOn: saved.settings ? saved.settings.soundOn !== false : saved.soundOn !== false,
-        lang: saved.settings && SUPPORTED_LANGUAGES.includes(saved.settings.lang) ? saved.settings.lang : "en"
+        lang: saved.settings && SUPPORTED_LANGUAGES.includes(saved.settings.lang) ? saved.settings.lang : fallback.settings.lang
       },
       tutorialSeen: Boolean(saved.tutorialSeen || saved.openingSeen)
     };
@@ -2221,12 +2239,6 @@ function normalizeInteger(value, fallback, min, max) {
 
 function getSoundOn() {
   return !progress || !progress.settings ? true : progress.settings.soundOn !== false;
-}
-
-function makeFileNumber(citizen) {
-  const number = citizen.id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  const classCode = (citizen.bodyClassCode || getKindCode(citizen)).replace(/[^A-Z0-9]/g, "");
-  return `${classCode}-${citizen.district}-${String(number).slice(-2)}-${citizen.age}${state.currentShift}`;
 }
 
 function clamp(value, min, max) {

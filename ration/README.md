@@ -40,7 +40,7 @@ Directives use `ruleTags` in `data.js`; the game logic checks those tags against
 
 ## Controls
 
-Use the language tabs in the footer or cover controls to select English, Japanese, French, German, Chinese, Spanish, Portuguese, Russian, or Korean. The current language is shown as the selected tab. The choice is saved in `localStorage` under `settings.lang`, and the game still runs by directly opening `index.html`.
+On first launch, the default language is selected from the browser language when it matches English, Japanese, French, German, Chinese, Spanish, Portuguese, Russian, or Korean; unsupported browser languages fall back to English. Use the language tabs in the footer or cover controls to change it. The current language is shown as the selected tab. The choice is saved in `localStorage` under `settings.lang`, and the game still runs by directly opening `index.html`.
 
 For each citizen, choose one action:
 
@@ -98,7 +98,7 @@ The game uses `localStorage` for:
 - `tutorialSeen`
 - `theRationOfficeCurrentRun`
 
-`settings.lang` stores `en`, `ja`, `fr`, `de`, `zh`, `es`, `pt`, `ru`, or `ko` for the language tabs.
+`settings.lang` stores `en`, `ja`, `fr`, `de`, `zh`, `es`, `pt`, `ru`, or `ko` for the language tabs after automatic browser-language selection or manual changes.
 The active run is saved separately under `theRationOfficeCurrentRun`, so reopening the same browser returns to the current shift, report, weekend, audit, or ending screen.
 
 `SHARE` uses `navigator.share` when available. Otherwise it copies the result text to the clipboard.

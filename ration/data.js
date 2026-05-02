@@ -1165,8 +1165,6 @@
         directivesTitle: "本日の通達",
         shiftWord: "勤務",
         closeDirectives: "閉じる",
-        citizenDossier: "公民身体記録",
-        fileNo: "記録番号",
         fields: {
           kind: "分類",
           bodyClass: "身体区分",
@@ -1965,8 +1963,6 @@
       directivesTitle: "DIRECTIVES DU JOUR",
       shiftWord: "POSTE",
       closeDirectives: "FERMER",
-      citizenDossier: "DOSSIER CIVIQUE DU CORPS",
-      fileNo: "DOSSIER",
       fields: {
         kind: "Espèce",
         bodyClass: "Classe",
@@ -2769,8 +2765,6 @@
       directivesTitle: "HEUTIGE DIREKTIVEN",
       shiftWord: "SCHICHT",
       closeDirectives: "SCHLIESSEN",
-      citizenDossier: "BÜRGER-KÖRPERAKTE",
-      fileNo: "AKTE",
       fields: {
         kind: "Art",
         bodyClass: "Klasse",
@@ -3574,8 +3568,6 @@
       directivesTitle: "今日通令",
       shiftWord: "班次",
       closeDirectives: "关闭",
-      citizenDossier: "公民身体记录",
-      fileNo: "档案号",
       fields: {
         kind: "种类",
         bodyClass: "身体分类",
@@ -4380,8 +4372,6 @@
       directivesTitle: "Órdenes de hoy",
       shiftWord: "Turno",
       closeDirectives: "Cerrar",
-      citizenDossier: "Registro corporal",
-      fileNo: "Expediente",
       fields: {
         kind: "tipo",
         bodyClass: "clase corporal",
@@ -5187,8 +5177,6 @@
       directivesTitle: "Ordens de hoje",
       shiftWord: "Turno",
       closeDirectives: "Fechar",
-      citizenDossier: "Registro corporal",
-      fileNo: "Arquivo",
       fields: {
         kind: "tipo",
         bodyClass: "classe corporal",
@@ -5995,8 +5983,6 @@
       directivesTitle: "Приказы дня",
       shiftWord: "СМЕНА",
       closeDirectives: "Закрыть",
-      citizenDossier: "Телесная запись",
-      fileNo: "Дело",
       fields: {
         kind: "вид",
         bodyClass: "класс тела",
@@ -6804,8 +6790,6 @@
       directivesTitle: "오늘의 지침",
       shiftWord: "근무",
       closeDirectives: "닫기",
-      citizenDossier: "시민 신체 기록",
-      fileNo: "파일 번호",
       fields: {
         kind: "종",
         bodyClass: "신체 분류",

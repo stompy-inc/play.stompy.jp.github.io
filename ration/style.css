@@ -318,7 +318,6 @@ button {
 
 .overline,
 .subtitle,
-.dossier-kicker,
 .directive-code {
   margin: 0;
   color: var(--red);
@@ -1690,11 +1689,6 @@ h1 {
   border-bottom: 2px solid var(--line);
 }
 
-.dossier-kicker {
-  color: var(--deep-red);
-  font-size: 0.82rem;
-}
-
 .window-statement {
   margin: 8px 0;
   padding: 7px 9px;
@@ -1734,13 +1728,6 @@ h1 {
   color: var(--ink);
   font-size: clamp(1.45rem, 7vw, 2.15rem);
   margin-top: 3px;
-}
-
-.file-no {
-  white-space: nowrap;
-  color: var(--deep-red);
-  font-size: 0.72rem;
-  text-align: right;
 }
 
 .citizen-layout {
