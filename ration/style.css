@@ -96,15 +96,27 @@ button {
   pointer-events: none;
 }
 
-.phone-frame.lang-ja {
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif;
+.phone-frame.lang-ja,
+.phone-frame.lang-zh,
+.phone-frame.lang-ko {
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif;
 }
 
 .phone-frame.lang-ja h1,
 .phone-frame.lang-ja .overline,
 .phone-frame.lang-ja .subtitle,
 .phone-frame.lang-ja .action-button strong,
-.phone-frame.lang-ja .stamp-label {
+.phone-frame.lang-ja .stamp-label,
+.phone-frame.lang-zh h1,
+.phone-frame.lang-zh .overline,
+.phone-frame.lang-zh .subtitle,
+.phone-frame.lang-zh .action-button strong,
+.phone-frame.lang-zh .stamp-label,
+.phone-frame.lang-ko h1,
+.phone-frame.lang-ko .overline,
+.phone-frame.lang-ko .subtitle,
+.phone-frame.lang-ko .action-button strong,
+.phone-frame.lang-ko .stamp-label {
   font-family: var(--display-font);
 }
 
@@ -118,8 +130,81 @@ button {
 .phone-frame.lang-ja .log-entry small,
 .phone-frame.lang-ja .prologue-panel p,
 .phone-frame.lang-ja .weekend-panel p,
-.phone-frame.lang-ja .ending-panel p {
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif;
+.phone-frame.lang-ja .ending-panel p,
+.phone-frame.lang-zh .citizen-fields,
+.phone-frame.lang-zh .newspaper-strip p,
+.phone-frame.lang-zh .poster-lines,
+.phone-frame.lang-zh .report-intro,
+.phone-frame.lang-zh .window-statement p,
+.phone-frame.lang-zh blockquote,
+.phone-frame.lang-zh .log-entry p,
+.phone-frame.lang-zh .log-entry small,
+.phone-frame.lang-zh .prologue-panel p,
+.phone-frame.lang-zh .weekend-panel p,
+.phone-frame.lang-zh .ending-panel p,
+.phone-frame.lang-ko .citizen-fields,
+.phone-frame.lang-ko .newspaper-strip p,
+.phone-frame.lang-ko .poster-lines,
+.phone-frame.lang-ko .report-intro,
+.phone-frame.lang-ko .window-statement p,
+.phone-frame.lang-ko blockquote,
+.phone-frame.lang-ko .log-entry p,
+.phone-frame.lang-ko .log-entry small,
+.phone-frame.lang-ko .prologue-panel p,
+.phone-frame.lang-ko .weekend-panel p,
+.phone-frame.lang-ko .ending-panel p {
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif;
+}
+
+.phone-frame.lang-fr .citizen-fields,
+.phone-frame.lang-fr .newspaper-strip p,
+.phone-frame.lang-fr .poster-lines,
+.phone-frame.lang-fr .report-intro,
+.phone-frame.lang-fr .window-statement p,
+.phone-frame.lang-fr blockquote,
+.phone-frame.lang-fr .log-entry p,
+.phone-frame.lang-fr .log-entry small,
+.phone-frame.lang-fr .prologue-panel p,
+.phone-frame.lang-fr .weekend-panel p,
+.phone-frame.lang-fr .ending-panel p,
+.phone-frame.lang-de .citizen-fields,
+.phone-frame.lang-de .newspaper-strip p,
+.phone-frame.lang-de .poster-lines,
+.phone-frame.lang-de .report-intro,
+.phone-frame.lang-de .window-statement p,
+.phone-frame.lang-de blockquote,
+.phone-frame.lang-de .log-entry p,
+.phone-frame.lang-de .log-entry small,
+.phone-frame.lang-de .prologue-panel p,
+.phone-frame.lang-de .weekend-panel p,
+.phone-frame.lang-de .ending-panel p,
+.phone-frame.lang-ru .citizen-fields,
+.phone-frame.lang-ru .newspaper-strip p,
+.phone-frame.lang-ru .poster-lines,
+.phone-frame.lang-ru .report-intro,
+.phone-frame.lang-ru .window-statement p,
+.phone-frame.lang-ru blockquote,
+.phone-frame.lang-ru .log-entry p,
+.phone-frame.lang-ru .log-entry small,
+.phone-frame.lang-ru .prologue-panel p,
+.phone-frame.lang-ru .weekend-panel p,
+.phone-frame.lang-ru .ending-panel p {
+  font-family: "Arial Narrow", "Franklin Gothic Condensed", Arial, sans-serif;
+}
+
+.phone-frame.lang-fr .opening-poster h2,
+.phone-frame.lang-fr .newspaper-strip h2,
+.phone-frame.lang-fr .action-button strong,
+.phone-frame.lang-fr .stamp-label,
+.phone-frame.lang-de .opening-poster h2,
+.phone-frame.lang-de .newspaper-strip h2,
+.phone-frame.lang-de .action-button strong,
+.phone-frame.lang-de .stamp-label,
+.phone-frame.lang-ru .opening-poster h2,
+.phone-frame.lang-ru .newspaper-strip h2,
+.phone-frame.lang-ru .action-button strong,
+.phone-frame.lang-ru .stamp-label {
+  overflow-wrap: anywhere;
 }
 
 .top-header {
@@ -320,9 +405,49 @@ h1 {
   font-size: 0.68rem;
 }
 
-.language-toggle {
-  color: var(--yellow);
-  background: rgba(195, 149, 62, 0.18);
+.language-tabs {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(21px, 1fr));
+  align-self: stretch;
+  min-height: 34px;
+  border: 2px solid rgba(216, 196, 155, 0.72);
+  background: rgba(15, 13, 10, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.48);
+}
+
+.language-tab {
+  min-width: 21px;
+  border: 0;
+  border-right: 1px solid rgba(216, 196, 155, 0.28);
+  padding: 0 4px;
+  color: rgba(234, 219, 184, 0.62);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.language-tab:last-child {
+  border-right: 0;
+}
+
+.language-tab.selected {
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(0deg, rgba(23, 18, 13, 0.08) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, var(--paper-light), var(--yellow));
+  box-shadow:
+    inset 0 0 0 1px rgba(23, 18, 13, 0.48),
+    inset 0 -4px 0 rgba(95, 25, 21, 0.22);
+}
+
+.language-tab:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--paper-light);
+  outline-offset: 2px;
 }
 
 .campaign-timeline {
@@ -535,6 +660,33 @@ h1 {
   line-break: strict;
 }
 
+.phone-frame.lang-zh .cover-game-summary {
+  line-break: strict;
+  font-size: 0.84rem;
+  line-height: 1.36;
+}
+
+.phone-frame.lang-ko .cover-game-summary {
+  line-break: strict;
+  font-size: 0.82rem;
+  line-height: 1.34;
+}
+
+.phone-frame.lang-fr .cover-game-summary {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.phone-frame.lang-de .cover-game-summary {
+  font-size: 0.8rem;
+  line-height: 1.32;
+}
+
+.phone-frame.lang-ru .cover-game-summary {
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
 .opening-poster .campaign-timeline {
   margin-top: 0;
   padding: 4px;
@@ -598,6 +750,33 @@ h1 {
   line-height: 1.12;
   word-break: keep-all;
   overflow-wrap: anywhere;
+}
+
+.phone-frame.lang-zh .opening-poster h2 {
+  line-height: 1.12;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.phone-frame.lang-ko .opening-poster h2 {
+  line-height: 1.12;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.phone-frame.lang-fr .opening-poster h2 {
+  font-size: clamp(1.45rem, 7.2vw, 1.9rem);
+  line-height: 1.08;
+}
+
+.phone-frame.lang-de .opening-poster h2 {
+  font-size: clamp(1.36rem, 6.8vw, 1.78rem);
+  line-height: 1.08;
+}
+
+.phone-frame.lang-ru .opening-poster h2 {
+  font-size: clamp(1.28rem, 6.4vw, 1.68rem);
+  line-height: 1.06;
 }
 
 .poster-slogan {
@@ -786,6 +965,11 @@ h1 {
   min-height: 34px;
 }
 
+.cover-footer-controls .language-tabs,
+.screen-footer-controls .language-tabs {
+  min-width: 268px;
+}
+
 .newspaper-strip {
   display: grid;
   grid-template-columns: 72px 1fr;
@@ -833,7 +1017,80 @@ h1 {
   text-wrap: pretty;
 }
 
+.phone-frame.lang-fr .newspaper-strip {
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.phone-frame.lang-de .newspaper-strip {
+  grid-template-columns: 50px minmax(0, 1fr);
+  gap: 7px;
+}
+
+.phone-frame.lang-ru .newspaper-strip {
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 7px;
+}
+
+.phone-frame.lang-fr .newspaper-label {
+  font-size: 0.62rem;
+  line-height: 1.08;
+}
+
+.phone-frame.lang-de .newspaper-label {
+  font-size: 0.6rem;
+  line-height: 1.08;
+}
+
+.phone-frame.lang-ru .newspaper-label {
+  font-size: 0.58rem;
+  line-height: 1.06;
+}
+
+.phone-frame.lang-fr .newspaper-strip h2 {
+  font-size: 0.82rem;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.phone-frame.lang-de .newspaper-strip h2 {
+  font-size: 0.78rem;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.phone-frame.lang-ru .newspaper-strip h2 {
+  font-size: 0.74rem;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+.phone-frame.lang-fr .newspaper-strip p {
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
+.phone-frame.lang-de .newspaper-strip p {
+  font-size: 0.72rem;
+  line-height: 1.18;
+}
+
+.phone-frame.lang-ru .newspaper-strip p {
+  font-size: 0.68rem;
+  line-height: 1.16;
+}
+
 .phone-frame.lang-ja .newspaper-strip {
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 7px;
+}
+
+.phone-frame.lang-zh .newspaper-strip {
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 7px;
+}
+
+.phone-frame.lang-ko .newspaper-strip {
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 7px;
 }
@@ -843,22 +1100,40 @@ h1 {
   line-height: 1.1;
 }
 
+.phone-frame.lang-zh .newspaper-label {
+  font-size: 0.68rem;
+  line-height: 1.1;
+}
+
+.phone-frame.lang-ko .newspaper-label {
+  font-size: 0.64rem;
+  line-height: 1.08;
+}
+
 .phone-frame.lang-ja .newspaper-strip h2,
-.phone-frame.lang-ja .newspaper-strip p {
+.phone-frame.lang-ja .newspaper-strip p,
+.phone-frame.lang-zh .newspaper-strip h2,
+.phone-frame.lang-zh .newspaper-strip p,
+.phone-frame.lang-ko .newspaper-strip h2,
+.phone-frame.lang-ko .newspaper-strip p {
   line-break: strict;
   word-break: normal;
   overflow-wrap: normal;
 }
 
-.phone-frame.lang-ja .newspaper-strip h2 {
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif;
+.phone-frame.lang-ja .newspaper-strip h2,
+.phone-frame.lang-zh .newspaper-strip h2,
+.phone-frame.lang-ko .newspaper-strip h2 {
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif;
   font-size: 0.82rem;
   font-weight: 800;
   line-height: 1.24;
   text-wrap: balance;
 }
 
-.phone-frame.lang-ja .newspaper-strip p {
+.phone-frame.lang-ja .newspaper-strip p,
+.phone-frame.lang-zh .newspaper-strip p,
+.phone-frame.lang-ko .newspaper-strip p {
   font-size: 0.76rem;
   line-height: 1.32;
   text-wrap: balance;
@@ -1139,6 +1414,24 @@ h1 {
   font-size: 0.62rem;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.phone-frame.lang-fr .directive-brief-copy > span,
+.phone-frame.lang-fr .directive-chips b,
+.phone-frame.lang-fr .directive-view-button,
+.phone-frame.lang-de .directive-brief-copy > span,
+.phone-frame.lang-de .directive-chips b,
+.phone-frame.lang-de .directive-view-button,
+.phone-frame.lang-ru .directive-brief-copy > span,
+.phone-frame.lang-ru .directive-chips b,
+.phone-frame.lang-ru .directive-view-button {
+  font-size: 0.56rem;
+}
+
+.phone-frame.lang-fr .directive-chips b,
+.phone-frame.lang-de .directive-chips b,
+.phone-frame.lang-ru .directive-chips b {
+  padding-inline: 4px;
 }
 
 .directive-view-button {
@@ -1801,6 +2094,13 @@ h1 {
   line-height: 1.14;
 }
 
+.phone-frame.lang-fr .citizen-fields,
+.phone-frame.lang-de .citizen-fields,
+.phone-frame.lang-ru .citizen-fields {
+  font-size: 0.76rem;
+  line-height: 1.12;
+}
+
 .citizen-fields div,
 .report-grid div {
   display: grid;
@@ -2003,6 +2303,13 @@ dd {
   line-height: 1;
   text-align: center;
   white-space: normal;
+}
+
+.phone-frame.lang-fr .action-button strong,
+.phone-frame.lang-de .action-button strong,
+.phone-frame.lang-ru .action-button strong {
+  font-size: clamp(0.68rem, 3vw, 1.04rem);
+  line-height: 0.96;
 }
 
 .action-approve {
@@ -2618,6 +2925,31 @@ dd {
     gap: 6px;
   }
 
+  .phone-frame.lang-zh .newspaper-strip {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .phone-frame.lang-ko .newspaper-strip {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .phone-frame.lang-fr .newspaper-strip {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .phone-frame.lang-de .newspaper-strip {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .phone-frame.lang-ru .newspaper-strip {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 6px;
+  }
+
   .newspaper-strip h2 {
     font-size: 0.78rem;
   }
@@ -2632,6 +2964,46 @@ dd {
 
   .phone-frame.lang-ja .newspaper-strip p {
     font-size: 0.72rem;
+  }
+
+  .phone-frame.lang-zh .newspaper-strip h2 {
+    font-size: 0.76rem;
+  }
+
+  .phone-frame.lang-zh .newspaper-strip p {
+    font-size: 0.72rem;
+  }
+
+  .phone-frame.lang-ko .newspaper-strip h2 {
+    font-size: 0.74rem;
+  }
+
+  .phone-frame.lang-ko .newspaper-strip p {
+    font-size: 0.7rem;
+  }
+
+  .phone-frame.lang-fr .newspaper-strip h2 {
+    font-size: 0.72rem;
+  }
+
+  .phone-frame.lang-fr .newspaper-strip p {
+    font-size: 0.68rem;
+  }
+
+  .phone-frame.lang-de .newspaper-strip h2 {
+    font-size: 0.68rem;
+  }
+
+  .phone-frame.lang-de .newspaper-strip p {
+    font-size: 0.64rem;
+  }
+
+  .phone-frame.lang-ru .newspaper-strip h2 {
+    font-size: 0.66rem;
+  }
+
+  .phone-frame.lang-ru .newspaper-strip p {
+    font-size: 0.62rem;
   }
 
   .directive-brief {
@@ -2685,6 +3057,12 @@ dd {
     font-size: 0.78rem;
   }
 
+  .phone-frame.lang-fr .citizen-fields,
+  .phone-frame.lang-de .citizen-fields,
+  .phone-frame.lang-ru .citizen-fields {
+    font-size: 0.68rem;
+  }
+
   .citizen-fields div,
   .report-grid div {
     grid-template-columns: minmax(70px, 40%) 1fr;
@@ -2696,6 +3074,12 @@ dd {
 
   .action-button strong {
     font-size: 0.78rem;
+  }
+
+  .phone-frame.lang-fr .action-button strong,
+  .phone-frame.lang-de .action-button strong,
+  .phone-frame.lang-ru .action-button strong {
+    font-size: 0.63rem;
   }
 
   .log-panel {

@@ -41,9 +41,16 @@ let state;
 let progress;
 let audioContext = null;
 
+const SUPPORTED_LANGUAGES = ["en", "ja", "fr", "de", "zh", "es", "pt", "ru", "ko"];
+
 function getLanguage() {
   const lang = progress && progress.settings ? progress.settings.lang : "en";
-  return lang === "ja" ? "ja" : "en";
+  return SUPPORTED_LANGUAGES.includes(lang) ? lang : "en";
+}
+
+function getLanguageButtonLabel(lang) {
+  const fallback = { en: "EN", ja: "JP", fr: "FR", de: "DE", zh: "中文", es: "ES", pt: "PT", ru: "RU", ko: "KO" };
+  return ui(`languageNames.${lang}`, fallback[lang] || lang.toUpperCase());
 }
 
 function getLocale() {
@@ -485,8 +492,30 @@ function renderHeader() {
 function renderScreenFooterControls() {
   return `
     <div class="screen-footer-controls" aria-label="${ui("screenControls", "Screen controls")}">
-      <button class="icon-button language-toggle" type="button" data-action="toggle-language" aria-label="${ui("toggleLanguage", "Toggle language")}">${getLanguage() === "ja" ? ui("languageEnglish", "EN") : ui("languageJapanese", "JP")}</button>
+      ${renderLanguageTabs()}
       <button class="icon-button sound-toggle" type="button" aria-label="${ui("toggleSound", "Toggle sound")}">${getSoundOn() ? ui("soundOn", "VOL") : ui("soundOff", "MUTE")}</button>
+    </div>
+  `;
+}
+
+function renderLanguageTabs() {
+  const current = getLanguage();
+
+  return `
+    <div class="language-tabs" role="tablist" aria-label="${ui("languageSelector", ui("toggleLanguage", "Language"))}">
+      ${SUPPORTED_LANGUAGES.map(lang => {
+        const selected = lang === current;
+        return `
+          <button
+            class="language-tab ${selected ? "selected" : ""}"
+            type="button"
+            role="tab"
+            data-language="${lang}"
+            aria-selected="${selected ? "true" : "false"}"
+            tabindex="${selected ? "0" : "-1"}"
+          >${getLanguageButtonLabel(lang)}</button>
+        `;
+      }).join("")}
     </div>
   `;
 }
@@ -584,7 +613,7 @@ function renderIntro() {
       </div>
       ${renderUnlockedEndingList()}
       <div class="cover-footer-controls" aria-label="${ui("coverControls", "Cover controls")}">
-        <button class="icon-button language-toggle" type="button" data-action="toggle-language" aria-label="${ui("toggleLanguage", "Toggle language")}">${getLanguage() === "ja" ? ui("languageEnglish", "EN") : ui("languageJapanese", "JP")}</button>
+        ${renderLanguageTabs()}
         <button class="icon-button sound-toggle" type="button" aria-label="${ui("toggleSound", "Toggle sound")}">${getSoundOn() ? ui("soundOn", "VOL") : ui("soundOff", "MUTE")}</button>
       </div>
     </section>
@@ -1053,9 +1082,12 @@ function bindControls() {
     if (action === "share") button.addEventListener("click", shareResult);
     if (action === "open-directives") button.addEventListener("click", openDirectives);
     if (action === "close-directives") button.addEventListener("click", closeDirectives);
-    if (action === "toggle-language") button.addEventListener("click", toggleLanguage);
     if (action === "open-cover") button.addEventListener("click", openCover);
     if (action === "resume-cover") button.addEventListener("click", resumeFromCover);
+  });
+
+  document.querySelectorAll("[data-language]").forEach(button => {
+    button.addEventListener("click", () => setLanguage(button.dataset.language));
   });
 
   document.querySelectorAll("[data-weekend-option]").forEach(button => {
@@ -1092,8 +1124,8 @@ function resumeFromCover() {
   render();
 }
 
-function toggleLanguage() {
-  const lang = getLanguage() === "ja" ? "en" : "ja";
+function setLanguage(lang) {
+  if (!SUPPORTED_LANGUAGES.includes(lang) || lang === getLanguage()) return;
   saveProgress({ settings: { ...progress.settings, lang } });
   render();
 }
@@ -2092,7 +2124,7 @@ function loadProgress() {
         ...fallback.settings,
         ...(saved.settings || {}),
         soundOn: saved.settings ? saved.settings.soundOn !== false : saved.soundOn !== false,
-        lang: saved.settings && saved.settings.lang === "ja" ? "ja" : "en"
+        lang: saved.settings && SUPPORTED_LANGUAGES.includes(saved.settings.lang) ? saved.settings.lang : "en"
       },
       tutorialSeen: Boolean(saved.tutorialSeen || saved.openingSeen)
     };
