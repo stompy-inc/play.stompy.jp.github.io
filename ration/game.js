@@ -3,6 +3,7 @@
 const STORAGE_KEY = "theRationOfficeProgress";
 const RUN_STORAGE_KEY = "theRationOfficeCurrentRun";
 const RUN_STORAGE_VERSION = 1;
+const SHARE_URL = "https://play.stompy.jp/ration/";
 const DANGER_LIMITS = {
   low: 25,
   high: 75
@@ -1740,15 +1741,16 @@ async function shareResult() {
     }),
     `"${endingText(ending, "shareQuote")}"`
   ].join("\n");
+  const shareTextWithUrl = `${shareText}\n${SHARE_URL}`;
 
   try {
     if (navigator.share) {
-      await navigator.share({ title: "THE RATION OFFICE", text: shareText });
+      await navigator.share({ title: "THE RATION OFFICE", text: shareText, url: SHARE_URL });
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(shareText);
+      await navigator.clipboard.writeText(shareTextWithUrl);
       addSystemLog("Share text copied to clipboard.", "Share");
     } else {
-      fallbackCopy(shareText);
+      fallbackCopy(shareTextWithUrl);
       addSystemLog("Share text copied.", "Share");
     }
   } catch (error) {
