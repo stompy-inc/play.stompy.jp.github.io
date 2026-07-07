@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>食虫植物タワーディフェンス</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #14170f;
+    color: #f0e6d2;
+    font-family: "Yu Gothic", "Meiryo", "Hiragino Sans", sans-serif;
+    overflow-x: hidden;
+  }
+  #app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #hud {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: #25361f;
+    border: 2px solid #3d5233;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 8px;
+    gap: 10px;
+    font-size: 15px;
+  }
+  #hud .stat { white-space: nowrap; }
+  #hud .stat b { color: #e8c468; }
+  #warnBadge {
+    display: none;
+    color: #ff5252;
+    font-weight: bold;
+    animation: warnBlink 0.8s infinite alternate;
+  }
+  @keyframes warnBlink { from { opacity: 0.5; } to { opacity: 1; } }
+  #debugToggle { font-size: 12px; color: #b7c9a8; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+  #canvasWrap {
+    position: relative;
+    border: 3px solid #5a4632;
+    border-radius: 4px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+  }
+  canvas { display: block; cursor: crosshair; background: #3f2f22; }
+
+  #waveBarContainer {
+    width: 100%;
+    height: 22px;
+    margin-top: 8px;
+    background: #241b12;
+    border: 2px solid #5a4632;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  #waveBarFill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ffd740, #ff9800);
+    transition: width 0.1s linear, background-color 0.2s;
+  }
+  #waveBarLabel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1b1206;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  #palette {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .palette-btn {
+    flex: 1 1 140px;
+    max-width: 170px;
+    background: #2c2419;
+    border: 2px solid #5a4632;
+    border-radius: 8px;
+    color: #f0e6d2;
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .palette-btn:hover { border-color: #e8c468; }
+  .palette-btn.selected { border-color: #ffe066; background: #40361f; transform: translateY(-2px); }
+  .palette-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+  .palette-btn .pname { font-weight: bold; font-size: 14px; }
+  .palette-btn .pcost { font-size: 12px; color: #e8c468; }
+  .palette-btn .pdesc { font-size: 10px; color: #b7c9a8; margin-top: 2px; }
+  .palette-btn .pstats { font-size: 10px; color: #d7c8a0; margin-top: 4px; display: flex; justify-content: space-between; gap: 4px; }
+  .palette-btn .pstats span b { color: #ffe066; font-weight: normal; }
+  .swatch { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 4px; }
+
+  #tooltip {
+    position: fixed;
+    display: none;
+    background: rgba(20,23,15,0.95);
+    border: 2px solid #e8c468;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    z-index: 50;
+    min-width: 140px;
+    pointer-events: none;
+  }
+  #tooltip .tt-title { font-weight: bold; color: #ffe066; margin-bottom: 4px; }
+  #tooltip .tt-warn { color: #ff8a65; font-size: 12px; margin-top: 4px; }
+  #tooltip button {
+    margin-top: 6px;
+    background: #4caf50;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    pointer-events: auto;
+  }
+  #tooltip button:hover { background: #66bb6a; }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,12,8,0.88);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .overlay-box {
+    background: #25361f;
+    border: 2px solid #5a4632;
+    border-radius: 10px;
+    padding: 24px 30px;
+    max-width: 420px;
+    text-align: center;
+  }
+  .overlay-box h2 { color: #ffe066; margin-top: 0; }
+  .overlay-box p { font-size: 14px; line-height: 1.7; text-align: left; }
+  .overlay-box button {
+    margin-top: 14px;
+    background: #e8c468;
+    border: none;
+    color: #14170f;
+    font-weight: bold;
+    padding: 10px 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .overlay-box button:hover { background: #ffd97a; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <span class="stat">所持金: <b id="moneyEl">¥0</b></span>
+    <span class="stat">スコア(累計売上): <b id="scoreEl">¥0</b></span>
+    <span class="stat">ウェーブ: <b id="waveEl">0</b></span>
+    <span class="stat" id="timerEl">-</span>
+    <span class="stat" id="warnBadge">⚠ 植物残り0株</span>
+    <label id="debugToggle"><input type="checkbox" id="debugSmellChk"> 匂い場デバッグ表示</label>
+  </div>
+
+  <div id="canvasWrap">
+    <canvas id="game" width="482" height="482"></canvas>
+  </div>
+
+  <div id="waveBarContainer">
+    <div id="waveBarFill"></div>
+    <span id="waveBarLabel">-</span>
+  </div>
+
+  <div id="palette"></div>
+</div>
+
+<div id="tooltip"></div>
+
+<div class="overlay" id="instructionsOverlay">
+  <div class="overlay-box">
+    <h2>食虫植物タワーディフェンス</h2>
+    <p>
+      1. 空いているマスをクリックして植物を配置しよう<br>
+      2. 蜜花が虫をおびき寄せ、ピストルバナ / ウツボカズラが虫を捕食する<br>
+      3. 育った植物は売り頃にクリック→売却して資金を稼ごう
+    </p>
+    <button id="startBtn">はじめる</button>
+  </div>
+</div>
+
+<div class="overlay" id="gameOverOverlay" style="display:none;">
+  <div class="overlay-box" id="gameOverBox">
+    <h2>ゲームオーバー</h2>
+    <p>畑の植物が食べ尽くされてしまった…</p>
+    <p>最終スコア: ¥<span id="finalScoreEl">0</span><br>生存ウェーブ: <span id="finalWaveEl">0</span></p>
+    <button id="retryBtn">もう一度挑戦</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const CONFIG = {
+  grid: { cols: 9, rows: 9, cell: 38, margin: 70 },
+  economy: { startMoney: 150, peakValueThreshold: 0.95 },
+  root: { time: 5, dmgMult: 2 },
+  smell: { falloffK: 0.05, jitter: 18, minContribution: 0.05 },
+  warning: { lowCount: 3, lastStandHpMult: 2 },
+  plants: {
+    mitsubana: {
+      label: "蜜花", cost: 20, smell: 120, maxHp: 20, color: "#ffb3d9",
+      desc: "虫を誘引・売却用",
+      sell: { base: 8, peak: 40, peakTime: 25, floor: 24, declineDuration: 60 }
+    },
+    flytrap: {
+      label: "ピストルバナ", cost: 50, smell: 30, maxHp: 40, color: "#4caf50",
+      desc: "範囲・遠距離・種弾速射",
+      growth: { toStage1: 2, toStage2: 5, overfeedBloat: 4 },
+      sellByStage: [20, 70, 125],
+      predation: [
+        { dmg: 5, interval: 0.9, range: 85 },
+        { dmg: 8, interval: 0.7, range: 95 },
+        { dmg: 13, interval: 0.5, range: 105 }
+      ],
+      aoe: true, projectile: true, projectileSpeed: 260, bloatMult: 2.0
+    },
+    pitcher: {
+      label: "ウツボカズラ", cost: 120, smell: 60, maxHp: 60, color: "#9c27b0",
+      desc: "範囲・低速・高火力",
+      growth: { toStage1: 3, toStage2: 7, overfeedBloat: 5 },
+      sellByStage: [50, 150, 300],
+      predation: [
+        { dmg: 9, interval: 1.6, range: 56 },
+        { dmg: 15, interval: 1.3, range: 66 },
+        { dmg: 26, interval: 1.0, range: 76 }
+      ],
+      aoe: true, bloatMult: 1.8
+    },
+    thorn: {
+      label: "イバラ", cost: 5, smell: 0, maxHp: 30, color: "#8d6e63",
+      desc: "壁・迷路構築用",
+      sellFlat: 1,
+      predation: { dmg: 1, interval: 1.0, range: 26 }
+    }
+  },
+  bugs: {
+    // spawnEdge: どの辺から出現するか(種族ごとに固定) / waveStart: 初登場ウェーブ / weight: 出現比率
+    fly: {
+      label: "ハエ", hp: 10, speed: 44, biteDmg: 4, biteInterval: 1.0, size: 7, flying: true,
+      spawnEdge: "top", waveStart: 1, weight: 1.0,
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.15 }
+    },
+    beetle: {
+      label: "甲虫", hp: 32, speed: 22, biteDmg: 11, biteInterval: 1.2, size: 10, flying: false,
+      spawnEdge: "left", waveStart: 2, weight: 0.7,
+      feedThreshold: 2, growth: { hp: 1.35, speed: 1.05, size: 1.12 }
+    },
+    slug: {
+      label: "なめくじ", hp: 48, speed: 11, biteDmg: 9, biteInterval: 1.4, size: 9, flying: false,
+      spawnEdge: "bottom", waveStart: 3, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.35, speed: 1.03, size: 1.12 }
+    },
+    worm: {
+      label: "みみず", hp: 14, speed: 34, biteDmg: 5, biteInterval: 0.9, size: 7, flying: false,
+      spawnEdge: "right", waveStart: 4, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.13 }
+    }
+  },
+  waves: {
+    prepTimeBase: 15, prepTimeMin: 9, prepTimeDecayPerWave: 0.3,
+    countBase: 5, countGrowthPerWave: 1.5,
+    spawnInterval: 1.1,
+    hpGrowthPerWave: 0.09, speedGrowthPerWave: 0.02, dmgGrowthPerWave: 0.05,
+    easyWaves: 3, easyMultiplier: 0.45
+  }
+};
+CONFIG.plants.flytrap.aoeRadius = CONFIG.grid.cell * 1;
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const moneyEl = document.getElementById("moneyEl");
+const scoreEl = document.getElementById("scoreEl");
+const waveEl = document.getElementById("waveEl");
+const timerEl = document.getElementById("timerEl");
+const warnEl = document.getElementById("warnBadge");
+const waveBarFillEl = document.getElementById("waveBarFill");
+const waveBarLabelEl = document.getElementById("waveBarLabel");
+const tooltipEl = document.getElementById("tooltip");
+const instructionsEl = document.getElementById("instructionsOverlay");
+const gameOverEl = document.getElementById("gameOverOverlay");
+const debugChk = document.getElementById("debugSmellChk");
+const paletteEl = document.getElementById("palette");
+
+// ---------- Audio ----------
+let audioCtx = null;
+function getAudioCtx(){
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function playFireSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(720, now);
+  osc.frequency.exponentialRampToValueAtTime(260, now + 0.09);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.28, now + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.15);
+}
+
+function playPitcherSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(210, now);
+  osc.frequency.exponentialRampToValueAtTime(95, now + 0.2);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.32, now + 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.27);
+}
+
+function playHoeSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(320, now);
+  osc.frequency.exponentialRampToValueAtTime(90, now + 0.1);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.3, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.17);
+
+  const duration = 0.08;
+  const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 800;
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.15, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  noise.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now + duration);
+}
+
+function playWaveStartSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const duration = 0.4;
+  const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.Q.value = 5;
+  filter.frequency.setValueAtTime(180, now);
+  filter.frequency.linearRampToValueAtTime(340, now + duration);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.16, now + 0.06);
+  gain.gain.linearRampToValueAtTime(0, now + duration);
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now + duration);
+}
+
+const FW = CONFIG.grid.cols * CONFIG.grid.cell;
+const FH = CONFIG.grid.rows * CONFIG.grid.cell;
+const MARGIN = CONFIG.grid.margin;
+
+let money = CONFIG.economy.startMoney;
+let score = 0;
+let plants = [];
+let bugs = [];
+let projectiles = [];
+let plantingEffects = [];
+let rangeEffects = [];
+const HOE_SWINGS = 2;
+let plantGrid = makeGrid();
+let smellField = new Float32Array(CONFIG.grid.cols * CONFIG.grid.rows);
+let selectedPlant = null;
+let selectedPlacementType = null;
+let debugSmell = false;
+let gameState = "ready"; // ready | playing | gameover
+let lastTooltipUpdate = 0;
+let everHadMultiplePlants = false;
+
+function makeGrid(){
+  return Array.from({length: CONFIG.grid.rows}, () => Array(CONFIG.grid.cols).fill(null));
+}
+function clampNum(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+// ---------- Plants ----------
+function createPlant(type, gx, gy){
+  const def = CONFIG.plants[type];
+  return {
+    type, gx, gy,
+    x: gx * CONFIG.grid.cell + CONFIG.grid.cell / 2,
+    y: gy * CONFIG.grid.cell + CONFIG.grid.cell / 2,
+    hp: def.maxHp, maxHp: def.maxHp,
+    plantedAt: performance.now(),
+    stage: 0, eatCount: 0, bloated: false,
+    chewTimer: 0, eatAnim: 0, lastAttack: 0,
+    lastStandBuffed: false, aimAngle: -Math.PI / 2
+  };
+}
+
+function isRooted(p){
+  return (performance.now() - p.plantedAt) < CONFIG.root.time * 1000;
+}
+
+function plantRadius(p){
+  return CONFIG.grid.cell * 0.3 + (p.stage || 0) * 2;
+}
+
+function plantSellValue(p){
+  const def = CONFIG.plants[p.type];
+  if (p.type === "mitsubana"){
+    const t = (performance.now() - p.plantedAt) / 1000;
+    const s = def.sell;
+    if (t <= s.peakTime) return Math.round(s.base + (s.peak - s.base) * (t / s.peakTime));
+    const dt = t - s.peakTime;
+    return Math.round(s.peak - (s.peak - s.floor) * Math.min(1, dt / s.declineDuration));
+  }
+  if (def.sellFlat != null) return def.sellFlat;
+  return def.sellByStage[p.stage];
+}
+
+function updatePlantGrowth(p){
+  const def = CONFIG.plants[p.type];
+  if (!def.growth) return;
+  if (p.stage < 1 && p.eatCount >= def.growth.toStage1) p.stage = 1;
+  if (p.stage < 2 && p.eatCount >= def.growth.toStage2) p.stage = 2;
+  if (p.stage >= 2 && p.eatCount >= def.growth.toStage2 + def.growth.overfeedBloat) p.bloated = true;
+}
+
+function predationStats(p){
+  const def = CONFIG.plants[p.type];
+  if (p.type === "thorn"){
+    return { dmg: def.predation.dmg, interval: def.predation.interval, range: def.predation.range, aoe: false };
+  }
+  const base = def.predation[p.stage];
+  const interval = p.bloated ? base.interval * def.bloatMult : base.interval;
+  return {
+    dmg: base.dmg, interval, range: base.range, aoe: def.aoe,
+    projectile: !!def.projectile, projectileSpeed: def.projectileSpeed, aoeRadius: def.aoeRadius
+  };
+}
+
+function tryPlacePlant(type, gx, gy){
+  if (gameState !== "playing") return false;
+  const def = CONFIG.plants[type];
+  if (money < def.cost) return false;
+  if (plantGrid[gy][gx]) return false;
+  money -= def.cost;
+  const p = createPlant(type, gx, gy);
+  plantGrid[gy][gx] = p;
+  plants.push(p);
+  recomputeSmellField();
+  plantingEffects.push({ x: p.x, y: p.y, timer: 0.7, maxTimer: 0.7 });
+  return true;
+}
+
+function sellPlant(p){
+  if (isRooted(p)) return false;
+  const val = plantSellValue(p);
+  money += val;
+  score += val;
+  plantGrid[p.gy][p.gx] = null;
+  plants = plants.filter(x => x !== p);
+  recomputeSmellField();
+  if (selectedPlant === p) selectedPlant = null;
+  plantingEffects.push({ x: p.x, y: p.y, timer: 0.7, maxTimer: 0.7 });
+  return true;
+}
+
+function handlePlantDestroyed(plant, bug){
+  plantGrid[plant.gy][plant.gx] = null;
+  plants = plants.filter(p => p !== plant);
+  if (selectedPlant === plant) hideTooltip();
+  recomputeSmellField();
+  const def = CONFIG.bugs[bug.type];
+  const newMax = (bug.maxHp || bug.hp) * def.growth.hp;
+  bug.hp = Math.min(bug.hp * def.growth.hp, newMax);
+  bug.maxHp = newMax;
+  bug.speed *= def.growth.speed;
+  bug.size *= def.growth.size;
+  bug.feedCount = (bug.feedCount || 0) + 1;
+  bug.target = null;
+}
+
+// ---------- Smell field ----------
+function recomputeSmellField(){
+  const { cols, rows } = CONFIG.grid;
+  smellField.fill(0);
+  for (const p of plants){
+    const S = CONFIG.plants[p.type].smell;
+    if (S <= 0) continue;
+    const radius = Math.min(Math.max(cols, rows), Math.ceil(Math.sqrt(S / CONFIG.smell.falloffK) / 3) + 2);
+    for (let dy = -radius; dy <= radius; dy++){
+      for (let dx = -radius; dx <= radius; dx++){
+        const nx = p.gx + dx, ny = p.gy + dy;
+        if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+        const dist2 = dx * dx + dy * dy;
+        const contribution = S / (1 + dist2 * CONFIG.smell.falloffK);
+        if (contribution < CONFIG.smell.minContribution) continue;
+        smellField[ny * cols + nx] += contribution;
+      }
+    }
+  }
+}
+
+// ---------- Bugs ----------
+function edgeSpawnFor(type){
+  const edge = CONFIG.bugs[type].spawnEdge;
+  if (edge === "top") return { x: Math.random() * FW, y: -MARGIN };
+  if (edge === "right") return { x: FW + MARGIN, y: Math.random() * FH };
+  if (edge === "bottom") return { x: Math.random() * FW, y: FH + MARGIN };
+  return { x: -MARGIN, y: Math.random() * FH };
+}
+
+function waveMultipliers(w){
+  const easy = w <= CONFIG.waves.easyWaves ? CONFIG.waves.easyMultiplier : 1;
+  return {
+    hp: 1 + (w - 1) * CONFIG.waves.hpGrowthPerWave * easy,
+    speed: 1 + (w - 1) * CONFIG.waves.speedGrowthPerWave * easy,
+    dmg: 1 + (w - 1) * CONFIG.waves.dmgGrowthPerWave * easy
+  };
+}
+
+function createBug(type, pos, mult){
+  const def = CONFIG.bugs[type];
+  const hp = def.hp * mult.hp;
+  return {
+    type, x: pos.x, y: pos.y, hp, maxHp: hp,
+    speed: def.speed * mult.speed,
+    biteDmg: def.biteDmg * mult.dmg,
+    biteInterval: def.biteInterval,
+    size: def.size,
+    feedCount: 0, target: null, lastBite: 0, dead: false,
+    wanderAngle: Math.random() * Math.PI * 2
+  };
+}
+
+function moveToward(bug, tx, ty, dt){
+  const dx = tx - bug.x, dy = ty - bug.y;
+  const d = Math.hypot(dx, dy) || 1;
+  const step = bug.speed * dt;
+  const s = Math.min(step, d);
+  bug.x += (dx / d) * s;
+  bug.y += (dy / d) * s;
+}
+
+function findNearestPlant(bug){
+  let best = null, bestD = Infinity;
+  for (const p of plants){
+    const d = Math.hypot(p.x - bug.x, p.y - bug.y);
+    if (d < bestD){ bestD = d; best = p; }
+  }
+  return best;
+}
+
+function splitBug(bug, newBugs){
+  const half = Math.max(4, Math.floor(bug.hp / 2));
+  for (let i = 0; i < 2; i++){
+    newBugs.push(Object.assign({}, bug, {
+      hp: half, maxHp: half,
+      size: bug.size * 0.8,
+      feedCount: 0, target: null, lastBite: 0, dead: false,
+      x: clampNum(bug.x + (Math.random() - 0.5) * 24, -MARGIN, FW + MARGIN),
+      y: clampNum(bug.y + (Math.random() - 0.5) * 24, -MARGIN, FH + MARGIN),
+      wanderAngle: Math.random() * Math.PI * 2
+    }));
+  }
+  bug.dead = true;
+}
+
+// ---------- Fence (grounded bugs only cross at the 4 gate openings) ----------
+function insideFarm(x, y){
+  return x >= 0 && x < FW && y >= 0 && y < FH;
+}
+
+function fenceGateSpan(){
+  const cell = CONFIG.grid.cell;
+  return [3 * cell, 6 * cell];
+}
+
+function crossedThroughGate(px, py, nx, ny){
+  const [g0, g1] = fenceGateSpan();
+  function crossOk(pa, na, pb, nb, boundary, lo, hi){
+    if ((pa < boundary) === (na < boundary)) return true; // didn't cross this line
+    const t = (boundary - pa) / (na - pa);
+    const at = pb + (nb - pb) * t;
+    return at >= lo && at <= hi;
+  }
+  if (!crossOk(px, nx, py, ny, 0, g0, g1)) return false;   // left edge
+  if (!crossOk(px, nx, py, ny, FW, g0, g1)) return false;  // right edge
+  if (!crossOk(py, ny, px, nx, 0, g0, g1)) return false;   // top edge
+  if (!crossOk(py, ny, px, nx, FH, g0, g1)) return false;  // bottom edge
+  return true;
+}
+
+function enforceFence(bug, px, py){
+  if (insideFarm(px, py) === insideFarm(bug.x, bug.y)) return;
+  if (crossedThroughGate(px, py, bug.x, bug.y)) return;
+  bug.x = px;
+  bug.y = py;
+}
+
+function gateWaypoint(bug){
+  const cell = CONFIG.grid.cell;
+  const mid = FW / 2;
+  const gates = [
+    { ox: mid, oy: -14, ix: mid, iy: cell * 0.6 },
+    { ox: mid, oy: FH + 14, ix: mid, iy: FH - cell * 0.6 },
+    { ox: -14, oy: mid, ix: cell * 0.6, iy: mid },
+    { ox: FW + 14, oy: mid, ix: FW - cell * 0.6, iy: mid }
+  ];
+  let best = null, bestD = Infinity;
+  for (const g of gates){
+    const d = Math.hypot(g.ox - bug.x, g.oy - bug.y);
+    if (d < bestD){ bestD = d; best = g; }
+  }
+  // Within 30px of the gate mouth, commit to the inside point (30 > the
+  // 14px mouth offset, so the target can't flip back and oscillate).
+  return bestD < 30 ? { x: best.ix, y: best.iy } : { x: best.ox, y: best.oy };
+}
+
+function updateBug(bug, dt, newBugs){
+  const grounded = !CONFIG.bugs[bug.type].flying;
+  if (grounded && !insideFarm(bug.x, bug.y)){
+    const px = bug.x, py = bug.y;
+    const wp = gateWaypoint(bug);
+    moveToward(bug, wp.x, wp.y, dt);
+    enforceFence(bug, px, py);
+    return;
+  }
+  const px = bug.x, py = bug.y;
+  updateBugCore(bug, dt, newBugs);
+  if (grounded) enforceFence(bug, px, py);
+}
+
+function updateBugCore(bug, dt, newBugs){
+  const { cell, cols, rows } = CONFIG.grid;
+
+  if (bug.target){
+    const t = bug.target;
+    if (t.hp <= 0 || plantGrid[t.gy][t.gx] !== t){
+      bug.target = null;
+    } else {
+      const d = Math.hypot(t.x - bug.x, t.y - bug.y);
+      const atkRange = bug.size + plantRadius(t) + 3;
+      if (d <= atkRange){
+        const now = performance.now();
+        if (now - bug.lastBite >= bug.biteInterval * 1000){
+          bug.lastBite = now;
+          const dmg = bug.biteDmg * (isRooted(t) ? CONFIG.root.dmgMult : 1);
+          t.hp -= dmg;
+          t.chewTimer = 0.3;
+          if (t.hp <= 0){
+            handlePlantDestroyed(t, bug);
+            const def = CONFIG.bugs[bug.type];
+            if (bug.feedCount >= def.feedThreshold) splitBug(bug, newBugs);
+          }
+        }
+        return;
+      } else {
+        moveToward(bug, t.x, t.y, dt);
+        return;
+      }
+    }
+  }
+
+  const gx = clampNum(Math.floor(bug.x / cell), 0, cols - 1);
+  const gy = clampNum(Math.floor(bug.y / cell), 0, rows - 1);
+  let best = null, bestVal = -Infinity, maxRaw = 0;
+  for (let dy = -1; dy <= 1; dy++){
+    for (let dx = -1; dx <= 1; dx++){
+      if (dx === 0 && dy === 0) continue;
+      const nx = gx + dx, ny = gy + dy;
+      if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+      const raw = smellField[ny * cols + nx];
+      if (raw > maxRaw) maxRaw = raw;
+      const val = raw + (Math.random() - 0.5) * CONFIG.smell.jitter;
+      if (val > bestVal){ bestVal = val; best = { nx, ny }; }
+    }
+  }
+  if (!best || maxRaw <= 0.05){
+    const nearest = findNearestPlant(bug);
+    if (nearest){
+      const d = Math.hypot(nearest.x - bug.x, nearest.y - bug.y);
+      if (d <= bug.size + plantRadius(nearest) + cell * 0.5){
+        bug.target = nearest;
+        return;
+      }
+      moveToward(bug, nearest.x, nearest.y, dt);
+      bug.x = clampNum(bug.x, -MARGIN, FW + MARGIN);
+      bug.y = clampNum(bug.y, -MARGIN, FH + MARGIN);
+      return;
+    }
+    if (Math.random() < 0.02) bug.wanderAngle = Math.random() * Math.PI * 2;
+    bug.x += Math.cos(bug.wanderAngle) * bug.speed * dt * 0.5;
+    bug.y += Math.sin(bug.wanderAngle) * bug.speed * dt * 0.5;
+    bug.x = clampNum(bug.x, -MARGIN, FW + MARGIN);
+    bug.y = clampNum(bug.y, -MARGIN, FH + MARGIN);
+    return;
+  }
+  const tx = best.nx * cell + cell / 2, ty = best.ny * cell + cell / 2;
+  const occ = plantGrid[best.ny][best.nx];
+  if (occ && occ.hp > 0){
+    const d = Math.hypot(occ.x - bug.x, occ.y - bug.y);
+    if (d <= bug.size + plantRadius(occ) + cell * 0.5){
+      bug.target = occ;
+      return;
+    }
+  }
+  moveToward(bug, tx, ty, dt);
+  bug.x = clampNum(bug.x, -MARGIN, FW + MARGIN);
+  bug.y = clampNum(bug.y, -MARGIN, FH + MARGIN);
+}
+
+// ---------- Predation ----------
+function runPredation(){
+  const now = performance.now();
+  for (const p of plants){
+    if (p.type === "mitsubana") continue;
+    const stats = predationStats(p);
+    if (now - p.lastAttack < stats.interval * 1000) continue;
+    const inRange = bugs.filter(b => !b.dead && Math.hypot(b.x - p.x, b.y - p.y) <= stats.range);
+    if (inRange.length === 0) continue;
+    p.lastAttack = now;
+    p.eatAnim = 0.25;
+    inRange.sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y));
+    const target = inRange[0];
+    if (stats.projectile){
+      const angle = Math.atan2(target.y - p.y, target.x - p.x);
+      p.aimAngle = angle;
+      playFireSound();
+      projectiles.push({
+        x: p.x, y: p.y,
+        targetX: target.x, targetY: target.y,
+        angle,
+        speed: stats.projectileSpeed,
+        dmg: stats.dmg,
+        aoeRadius: stats.aoeRadius,
+        sourcePlant: p,
+        dead: false
+      });
+    } else if (stats.aoe){
+      playPitcherSound();
+      rangeEffects.push({ x: p.x, y: p.y, range: stats.range, color: CONFIG.plants[p.type].color, timer: 0.4, maxTimer: 0.4 });
+      inRange.forEach(b => {
+        b.hp -= stats.dmg;
+        if (b.hp <= 0 && !b.dead){ b.dead = true; p.eatCount = (p.eatCount || 0) + 1; }
+      });
+      updatePlantGrowth(p);
+    } else {
+      target.hp -= stats.dmg;
+      if (target.hp <= 0 && !target.dead){ target.dead = true; p.eatCount = (p.eatCount || 0) + 1; }
+      updatePlantGrowth(p);
+    }
+  }
+}
+
+// ---------- Projectiles ----------
+function updateProjectiles(dt){
+  for (const proj of projectiles){
+    if (proj.dead) continue;
+    const dx = proj.targetX - proj.x, dy = proj.targetY - proj.y;
+    const dist = Math.hypot(dx, dy);
+    const step = proj.speed * dt;
+    if (step >= dist){
+      proj.x = proj.targetX;
+      proj.y = proj.targetY;
+      explodeProjectile(proj);
+      proj.dead = true;
+    } else {
+      proj.x += (dx / dist) * step;
+      proj.y += (dy / dist) * step;
+    }
+  }
+  projectiles = projectiles.filter(p => !p.dead);
+}
+
+function updatePlantingEffects(dt){
+  plantingEffects.forEach(e => {
+    const prevElapsed = e.maxTimer - e.timer;
+    e.timer -= dt;
+    const elapsed = e.maxTimer - e.timer;
+    for (let i = 0; i < HOE_SWINGS; i++){
+      const hitTime = (e.maxTimer / HOE_SWINGS) * (i + 0.5);
+      if (prevElapsed < hitTime && elapsed >= hitTime){
+        playHoeSound();
+      }
+    }
+  });
+  plantingEffects = plantingEffects.filter(e => e.timer > 0);
+}
+
+function updateRangeEffects(dt){
+  rangeEffects.forEach(e => { e.timer -= dt; });
+  rangeEffects = rangeEffects.filter(e => e.timer > 0);
+}
+
+function explodeProjectile(proj){
+  const hit = bugs.filter(b => !b.dead && Math.hypot(b.x - proj.x, b.y - proj.y) <= proj.aoeRadius);
+  hit.forEach(b => {
+    b.hp -= proj.dmg;
+    if (b.hp <= 0 && !b.dead){
+      b.dead = true;
+      const sp = proj.sourcePlant;
+      if (sp && plantGrid[sp.gy] && plantGrid[sp.gy][sp.gx] === sp){
+        sp.eatCount = (sp.eatCount || 0) + 1;
+        updatePlantGrowth(sp);
+      }
+    }
+  });
+}
+
+// ---------- Wave manager ----------
+// Waves trigger on a fixed schedule (cycleTimer) regardless of whether the
+// previous wave's bugs have been cleared; unspawned backlog carries over.
+const waveManager = {
+  waveNumber: 0,
+  cycleTimer: CONFIG.waves.prepTimeBase,
+  cycleDuration: CONFIG.waves.prepTimeBase,
+  spawning: false,
+  spawnedCount: 0,
+  totalToSpawn: 0,
+  spawnTimer: 0,
+  update(dt){
+    if (gameState !== "playing") return;
+    if (this.spawning){
+      this.spawnTimer -= dt;
+      if (this.spawnTimer <= 0 && this.spawnedCount < this.totalToSpawn){
+        this.doSpawn();
+        this.spawnedCount++;
+        this.spawnTimer = CONFIG.waves.spawnInterval;
+      }
+      if (this.spawnedCount >= this.totalToSpawn) this.spawning = false;
+    }
+    this.cycleTimer -= dt;
+    if (this.cycleTimer <= 0) this.startWave();
+  },
+  startWave(){
+    this.waveNumber++;
+    const w = this.waveNumber;
+    const easy = w <= CONFIG.waves.easyWaves ? CONFIG.waves.easyMultiplier : 1;
+    const newCount = Math.max(3, Math.round((CONFIG.waves.countBase + (w - 1) * CONFIG.waves.countGrowthPerWave) * easy));
+    this.totalToSpawn = this.spawnedCount + newCount;
+    this.spawnTimer = 0;
+    this.spawning = true;
+    const prepTime = Math.max(CONFIG.waves.prepTimeMin, CONFIG.waves.prepTimeBase - w * CONFIG.waves.prepTimeDecayPerWave);
+    this.cycleDuration = prepTime;
+    this.cycleTimer = prepTime;
+    playWaveStartSound();
+  },
+  doSpawn(){
+    const w = this.waveNumber;
+    const pool = [];
+    for (const type of Object.keys(CONFIG.bugs)){
+      const def = CONFIG.bugs[type];
+      if (w >= def.waveStart) pool.push({ type, weight: def.weight });
+    }
+    const total = pool.reduce((s, p) => s + p.weight, 0);
+    let r = Math.random() * total;
+    let chosen = pool[0].type;
+    for (const p of pool){
+      r -= p.weight;
+      if (r <= 0){ chosen = p.type; break; }
+    }
+    bugs.push(createBug(chosen, edgeSpawnFor(chosen), waveMultipliers(w)));
+  }
+};
+
+// ---------- Game state checks ----------
+function checkLastStand(){
+  if (plants.length >= 2) everHadMultiplePlants = true;
+  if (plants.length === 1 && everHadMultiplePlants){
+    const p = plants[0];
+    if (!p.lastStandBuffed){
+      p.maxHp *= CONFIG.warning.lastStandHpMult;
+      p.hp *= CONFIG.warning.lastStandHpMult;
+      p.lastStandBuffed = true;
+    }
+  }
+}
+function checkLoss(){
+  if (gameState === "playing" && bugs.length > 0 && plants.length === 0){
+    triggerGameOver();
+  }
+}
+function triggerGameOver(){
+  gameState = "gameover";
+  document.getElementById("finalScoreEl").textContent = Math.floor(score);
+  document.getElementById("finalWaveEl").textContent = waveManager.waveNumber;
+  gameOverEl.style.display = "flex";
+}
+
+// ---------- Main update ----------
+function update(dt){
+  waveManager.update(dt);
+  for (const p of plants){
+    if (p.chewTimer > 0) p.chewTimer = Math.max(0, p.chewTimer - dt);
+    if (p.eatAnim > 0) p.eatAnim = Math.max(0, p.eatAnim - dt);
+  }
+  runPredation();
+  const newBugs = [];
+  for (const b of bugs){
+    if (b.dead) continue;
+    updateBug(b, dt, newBugs);
+  }
+  bugs = bugs.filter(b => !b.dead && b.hp > 0).concat(newBugs);
+  updateProjectiles(dt);
+  updatePlantingEffects(dt);
+  updateRangeEffects(dt);
+  checkLastStand();
+  checkLoss();
+}
+
+// ---------- Rendering ----------
+// Scenery decorations live in the margin band around the farm (farm-local
+// coords: x,y in [-MARGIN, 0) or [FW/FH, FW/FH+MARGIN)). Visual only.
+const SCENERY = {
+  trees: [
+    { x: FW * 0.18, y: -36, r: 13 }, { x: FW * 0.47, y: -40, r: 16 }, { x: FW * 0.78, y: -33, r: 12 },
+    { x: -36, y: FH * 0.18, r: 14 }, { x: -32, y: FH * 0.51, r: 12 }, { x: -38, y: FH * 0.86, r: 15 },
+    { x: FW + 36, y: FH * 0.15, r: 13 }, { x: FW + 32, y: FH * 0.48, r: 15 }, { x: FW + 38, y: FH * 0.82, r: 12 },
+    { x: FW * 0.13, y: FH + 36, r: 13 }, { x: FW * 0.44, y: FH + 40, r: 12 }, { x: FW * 0.75, y: FH + 35, r: 15 }
+  ],
+  rocks: [
+    { x: FW + 6, y: FH * 0.2, rx: 6, ry: 4 }, { x: FW + 9, y: FH * 0.55, rx: 5, ry: 3.5 }, { x: FW + 5, y: FH * 0.88, rx: 7, ry: 4.5 }
+  ],
+  grass: [
+    { x: FW * 0.06, y: -20 }, { x: FW * 0.32, y: -55 }, { x: FW * 0.63, y: -18 }, { x: FW * 0.94, y: -48 },
+    { x: -20, y: FH * 0.07 }, { x: -52, y: FH * 0.38 }, { x: -18, y: FH * 0.7 }, { x: -50, y: FH * 0.99 },
+    { x: FW * 0.04, y: FH + 23 }, { x: FW * 0.29, y: FH + 58 }, { x: FW * 0.58, y: FH + 20 }, { x: FW * 0.88, y: FH + 60 }
+  ]
+};
+
+function drawTree(x, y, r){
+  ctx.fillStyle = "#5d4037";
+  ctx.fillRect(x - 2, y, 4, r * 0.9);
+  ctx.fillStyle = "#3e7d3a";
+  ctx.beginPath(); ctx.arc(x, y - r * 0.2, r, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4f9447";
+  ctx.beginPath(); ctx.arc(x - r * 0.35, y - r * 0.45, r * 0.55, 0, Math.PI * 2); ctx.fill();
+}
+
+function drawHut(cx, cy){
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = "#8d6e4f";
+  ctx.fillRect(-20, -8, 40, 24);
+  ctx.fillStyle = "#a33b2e";
+  ctx.beginPath();
+  ctx.moveTo(-24, -8); ctx.lineTo(0, -27); ctx.lineTo(24, -8);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#5b4632";
+  ctx.fillRect(-5, 3, 10, 13);
+  ctx.fillStyle = "#ffe9a8";
+  ctx.fillRect(8, 0, 8, 8);
+  ctx.strokeStyle = "#3d2f21";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(8, 0, 8, 8);
+  ctx.restore();
+}
+
+function drawScenery(){
+  SCENERY.rocks.forEach(rk => {
+    ctx.fillStyle = "#9e9e9e";
+    ctx.beginPath(); ctx.ellipse(rk.x, rk.y, rk.rx, rk.ry, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#bdbdbd";
+    ctx.beginPath(); ctx.ellipse(rk.x - rk.rx * 0.3, rk.y - rk.ry * 0.3, rk.rx * 0.4, rk.ry * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.strokeStyle = "#6a8f3c";
+  ctx.lineWidth = 1.5;
+  SCENERY.grass.forEach(g => {
+    ctx.beginPath();
+    ctx.moveTo(g.x - 3, g.y + 4); ctx.lineTo(g.x - 1, g.y - 3);
+    ctx.moveTo(g.x, g.y + 4); ctx.lineTo(g.x, g.y - 5);
+    ctx.moveTo(g.x + 3, g.y + 4); ctx.lineTo(g.x + 1, g.y - 3);
+    ctx.stroke();
+  });
+  drawHut(-36, -32);
+  SCENERY.trees.forEach(tr => drawTree(tr.x, tr.y, tr.r));
+}
+
+function drawBackground(){
+  const { cols, rows, cell } = CONFIG.grid;
+  ctx.fillStyle = "#4a382a";
+  ctx.fillRect(0, 0, cols * cell, rows * cell);
+  ctx.strokeStyle = "rgba(0,0,0,0.25)";
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx <= cols; gx++){
+    ctx.beginPath(); ctx.moveTo(gx * cell, 0); ctx.lineTo(gx * cell, rows * cell); ctx.stroke();
+  }
+  for (let gy = 0; gy <= rows; gy++){
+    ctx.beginPath(); ctx.moveTo(0, gy * cell); ctx.lineTo(cols * cell, gy * cell); ctx.stroke();
+  }
+}
+
+// White fence around the farm perimeter, with an opening at the center
+// 3 cells of each side. Visual only — bugs pass through freely.
+function drawFence(){
+  const cell = CONFIG.grid.cell;
+  const off = 8;
+  const gapStart = 3 * cell, gapEnd = 6 * cell;
+  function seg(x1, y1, x2, y2){
+    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(x1, y1 + 1); ctx.lineTo(x2, y2 + 1); ctx.stroke();
+    ctx.strokeStyle = "#f2f2ea";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    const n = Math.max(1, Math.round(len / (cell / 2)));
+    for (let i = 0; i <= n; i++){
+      const px = x1 + (x2 - x1) * i / n;
+      const py = y1 + (y2 - y1) * i / n;
+      ctx.fillStyle = "#f2f2ea";
+      ctx.fillRect(px - 2.5, py - 2.5, 5, 5);
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px - 2.5, py - 2.5, 5, 5);
+    }
+  }
+  // top
+  seg(-off, -off, gapStart, -off);
+  seg(gapEnd, -off, FW + off, -off);
+  // bottom
+  seg(-off, FH + off, gapStart, FH + off);
+  seg(gapEnd, FH + off, FW + off, FH + off);
+  // left
+  seg(-off, -off, -off, gapStart);
+  seg(-off, gapEnd, -off, FH + off);
+  // right
+  seg(FW + off, -off, FW + off, gapStart);
+  seg(FW + off, gapEnd, FW + off, FH + off);
+}
+
+function drawSmellHeatmap(){
+  const { cols, rows, cell } = CONFIG.grid;
+  for (let gy = 0; gy < rows; gy++){
+    for (let gx = 0; gx < cols; gx++){
+      const v = smellField[gy * cols + gx];
+      if (v <= 0.5) continue;
+      const t = Math.min(1, v / 120);
+      const r = Math.round(255 * t), b = Math.round(255 * (1 - t));
+      ctx.fillStyle = `rgba(${r},80,${b},0.45)`;
+      ctx.fillRect(gx * cell, gy * cell, cell, cell);
+    }
+  }
+}
+
+function isAtPeakValue(p){
+  const def = CONFIG.plants[p.type];
+  if (p.type === "mitsubana"){
+    return plantSellValue(p) >= def.sell.peak * CONFIG.economy.peakValueThreshold;
+  }
+  if (def.growth){
+    return p.stage === 2;
+  }
+  return false;
+}
+
+function drawPeakTileBorder(p){
+  const cell = CONFIG.grid.cell;
+  const pulse = 0.7 + 0.3 * Math.sin(performance.now() / 200);
+  ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(-cell / 2 + 2, -cell / 2 + 2, cell - 4, cell - 4);
+}
+
+function drawPlant(p){
+  const def = CONFIG.plants[p.type];
+  let sx = 0, sy = 0;
+  if (p.chewTimer > 0){ sx = (Math.random() - 0.5) * 4; sy = (Math.random() - 0.5) * 4; }
+  ctx.save();
+  ctx.translate(p.x + sx, p.y + sy);
+
+  if (p.type === "mitsubana"){
+    const t = (performance.now() - p.plantedAt) / 1000;
+    const bloom = Math.min(1, t / def.sell.peakTime);
+    const R = 6 + bloom * 7;
+    for (let i = 0; i < 6; i++){
+      const a = (Math.PI * 2 / 6) * i;
+      ctx.beginPath();
+      ctx.fillStyle = def.color;
+      ctx.ellipse(Math.cos(a) * R * 0.7, Math.sin(a) * R * 0.7, R * 0.6, R * 0.35, a, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.beginPath(); ctx.fillStyle = "#ffe066"; ctx.arc(0, 0, R * 0.45, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "flytrap"){
+    const bodyColor = p.bloated ? "#6b6b4a" : ["#8bc34a", "#4caf50", "#2e7d32"][p.stage];
+    const angle = p.aimAngle != null ? p.aimAngle : -Math.PI / 2;
+    const barrelLen = 11 + p.stage * 3;
+    ctx.fillStyle = "#33691e"; ctx.fillRect(-2, 4, 4, 12);
+    for (let i = 0; i < 5; i++){
+      const a = (Math.PI * 2 / 5) * i;
+      ctx.beginPath();
+      ctx.fillStyle = bodyColor;
+      ctx.ellipse(Math.cos(a) * 5, Math.sin(a) * 5, 5 + p.stage, 3, a, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.fillStyle = "#e0e6ea";
+    ctx.fillRect(0, -2.5, barrelLen, 5);
+    ctx.strokeStyle = "#8fa3ad";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, -2.5, barrelLen, 5);
+    ctx.fillStyle = "#ffb300";
+    ctx.fillRect(barrelLen - 3, -3.5, 3, 7);
+    ctx.restore();
+    if (p.eatAnim > 0.15){
+      const flashX = Math.cos(angle) * barrelLen, flashY = Math.sin(angle) * barrelLen;
+      ctx.save();
+      ctx.translate(flashX, flashY);
+      ctx.rotate(angle);
+      ctx.fillStyle = "rgba(255, 224, 102, 0.95)";
+      for (let i = 0; i < 4; i++){
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(6, -3);
+        ctx.lineTo(9, 0);
+        ctx.lineTo(6, 3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.rotate(Math.PI / 2);
+      }
+      ctx.restore();
+    }
+    ctx.beginPath(); ctx.fillStyle = "#ffe066"; ctx.arc(0, 0, 3.5 + p.stage, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "pitcher"){
+    const bodyColor = p.bloated ? "#5d4037" : ["#9c27b0", "#7b1fa2", "#4a148c"][p.stage];
+    const pulse = p.eatAnim > 0 ? 4 : 0;
+    ctx.beginPath(); ctx.fillStyle = bodyColor;
+    ctx.ellipse(0, 0, 7 + p.stage * 2 + pulse, 12 + p.stage * 2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = "#311b46";
+    ctx.ellipse(0, -10 - p.stage * 2, 5 + p.stage, 3, 0, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "thorn"){
+    ctx.beginPath(); ctx.fillStyle = def.color;
+    const spikes = 7, R = 9, r = 4;
+    for (let i = 0; i < spikes * 2; i++){
+      const rad = i % 2 === 0 ? R : r;
+      const a = (Math.PI / spikes) * i;
+      const px = Math.cos(a) * rad, py = Math.sin(a) * rad;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath(); ctx.fill();
+  }
+
+  if (isRooted(p)){
+    ctx.strokeStyle = "rgba(255,255,255,0.6)";
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if (p.lastStandBuffed){
+    ctx.strokeStyle = `rgba(255,215,0,${0.5 + 0.5 * Math.sin(performance.now() / 150)})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.stroke();
+  }
+  if (!isRooted(p) && isAtPeakValue(p)){
+    drawPeakTileBorder(p);
+  }
+  ctx.restore();
+
+  if (p.hp < p.maxHp){
+    const w = 24, h = 3;
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(p.x - w / 2, p.y - 24, w, h);
+    ctx.fillStyle = p.hp / p.maxHp > 0.4 ? "#8bc34a" : "#e53935";
+    ctx.fillRect(p.x - w / 2, p.y - 24, w * Math.max(0, p.hp / p.maxHp), h);
+  }
+}
+
+function drawCuteEyes(size, spacingRatio){
+  const eyeR = Math.max(1.6, size * 0.28);
+  const pupilR = eyeR * 0.5;
+  const offsetX = size * spacingRatio;
+  const offsetY = -size * 0.12;
+  [-1, 1].forEach(dir => {
+    ctx.beginPath();
+    ctx.fillStyle = "#ffffff";
+    ctx.arc(dir * offsetX, offsetY, eyeR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.fillStyle = "#161616";
+    ctx.arc(dir * offsetX + dir * pupilR * 0.3, offsetY + pupilR * 0.2, pupilR, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawBug(b){
+  ctx.save();
+  ctx.translate(b.x, b.y);
+  if (b.type === "fly"){
+    const flap = Math.sin(performance.now() / 60 + b.x) * 3;
+    ctx.fillStyle = "rgba(255,255,255,0.4)";
+    ctx.beginPath(); ctx.ellipse(-b.size * 0.8, -flap, b.size * 0.7, b.size * 0.35, 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(b.size * 0.8, flap, b.size * 0.7, b.size * 0.35, -0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffd400";
+    ctx.beginPath(); ctx.arc(0, 0, b.size, 0, Math.PI * 2); ctx.fill();
+    drawCuteEyes(b.size, 0.34);
+  } else if (b.type === "beetle"){
+    ctx.fillStyle = "#29b6f6";
+    ctx.beginPath(); ctx.ellipse(0, 0, b.size, b.size * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+    drawCuteEyes(b.size, 0.42);
+  } else if (b.type === "slug"){
+    const squish = 1 + Math.sin(performance.now() / 250 + b.x) * 0.08;
+    ctx.fillStyle = "#aeea00";
+    ctx.beginPath(); ctx.ellipse(0, b.size * 0.15, b.size * 1.3 * squish, b.size * 0.65 / squish, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#7cb342";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-b.size * 0.4, -b.size * 0.3); ctx.lineTo(-b.size * 0.55, -b.size * 0.9);
+    ctx.moveTo(b.size * 0.4, -b.size * 0.3); ctx.lineTo(b.size * 0.55, -b.size * 0.9);
+    ctx.stroke();
+    ctx.fillStyle = "#aeea00";
+    ctx.beginPath(); ctx.arc(-b.size * 0.55, -b.size * 0.95, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(b.size * 0.55, -b.size * 0.95, 2, 0, Math.PI * 2); ctx.fill();
+    drawCuteEyes(b.size, 0.4);
+  } else if (b.type === "worm"){
+    const wig = Math.sin(performance.now() / 120 + b.y) * 2;
+    ctx.fillStyle = "#ff8a80";
+    ctx.beginPath(); ctx.arc(-b.size * 1.1, wig, b.size * 0.55, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-b.size * 0.55, -wig * 0.5, b.size * 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, b.size * 0.85, 0, Math.PI * 2); ctx.fill();
+    drawCuteEyes(b.size * 0.85, 0.4);
+  }
+  ctx.restore();
+  if (b.hp < b.maxHp){
+    const w = b.size * 2, h = 3;
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(b.x - w / 2, b.y - b.size - 8, w, h);
+    ctx.fillStyle = "#e53935"; ctx.fillRect(b.x - w / 2, b.y - b.size - 8, w * Math.max(0, b.hp / b.maxHp), h);
+  }
+}
+
+function drawProjectile(proj){
+  ctx.save();
+  ctx.translate(proj.x, proj.y);
+  ctx.rotate(proj.angle);
+  ctx.fillStyle = "#c9a227";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 6, 2.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#7c5a10";
+  ctx.beginPath();
+  ctx.ellipse(3, 0, 2.5, 1.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawFarmerTilling(e){
+  const progress = 1 - e.timer / e.maxTimer;
+  const alpha = e.timer < 0.15 ? e.timer / 0.15 : 1;
+  const swingPhase = Math.min(0.999, progress * HOE_SWINGS) % 1;
+  const raisedAngle = -Math.PI * 0.7;
+  const downAngle = -Math.PI * 0.1;
+  const hoeAngle = swingPhase < 0.5
+    ? raisedAngle + (downAngle - raisedAngle) * (swingPhase / 0.5)
+    : downAngle + (raisedAngle - downAngle) * ((swingPhase - 0.5) / 0.5);
+
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  ctx.globalAlpha = alpha;
+  const bodyY = -16;
+
+  ctx.strokeStyle = "#4a3222";
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-3, bodyY + 13); ctx.lineTo(-4, bodyY + 21); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(3, bodyY + 13); ctx.lineTo(4, bodyY + 21); ctx.stroke();
+
+  ctx.fillStyle = "#8d6e4a";
+  ctx.beginPath(); ctx.ellipse(0, bodyY + 7, 5, 8, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = "#f0c090";
+  ctx.beginPath(); ctx.arc(0, bodyY - 2, 4.5, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = "#5a8f4a";
+  ctx.beginPath(); ctx.ellipse(0, bodyY - 5, 6, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.save();
+  ctx.translate(3, bodyY + 3);
+  ctx.rotate(hoeAngle);
+  ctx.strokeStyle = "#f0c090";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(12, 0); ctx.stroke();
+  ctx.strokeStyle = "#6b4a2a";
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(20, 0); ctx.stroke();
+  ctx.fillStyle = "#8a8a8a";
+  ctx.fillRect(19, -3, 4, 6);
+  ctx.restore();
+
+  if (swingPhase > 0.42 && swingPhase < 0.58){
+    ctx.fillStyle = "rgba(180,150,110,0.5)";
+    ctx.beginPath(); ctx.arc(15, bodyY + 17, 5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function hexToRgba(hex, alpha){
+  const v = parseInt(hex.slice(1), 16);
+  const r = (v >> 16) & 255, g = (v >> 8) & 255, b = v & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function drawAttackRange(p){
+  if (p.type === "mitsubana") return;
+  const def = CONFIG.plants[p.type];
+  const stats = predationStats(p);
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, stats.range, 0, Math.PI * 2);
+  ctx.fillStyle = hexToRgba(def.color, 0.12);
+  ctx.fill();
+  ctx.strokeStyle = hexToRgba(def.color, 0.75);
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawRangeEffect(e){
+  const t = 1 - e.timer / e.maxTimer;       // 0 -> 1 over lifetime
+  const fade = e.timer / e.maxTimer;         // 1 -> 0
+  const ease = 1 - Math.pow(1 - t, 3);       // easeOutCubic for the ripple
+  // filled tint of the full range that fades out
+  ctx.beginPath();
+  ctx.arc(e.x, e.y, e.range, 0, Math.PI * 2);
+  ctx.fillStyle = hexToRgba(e.color, 0.22 * fade);
+  ctx.fill();
+  // outer boundary flash
+  ctx.beginPath();
+  ctx.arc(e.x, e.y, e.range, 0, Math.PI * 2);
+  ctx.strokeStyle = hexToRgba(e.color, 0.85 * fade);
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  // expanding shockwave ripple from center to the range edge
+  ctx.beginPath();
+  ctx.arc(e.x, e.y, e.range * ease, 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(255,255,255,${0.7 * fade})`;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+function drawWarningVignette(){
+  if (plants.length === 0 || plants.length > CONFIG.warning.lowCount) return;
+  const t = performance.now() / 300;
+  const pulse = (Math.sin(t) + 1) / 2;
+  const alpha = 0.15 + pulse * 0.35;
+  const w = canvas.width, h = canvas.height;
+  const grad = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.75);
+  grad.addColorStop(0, "rgba(255,0,0,0)");
+  grad.addColorStop(1, `rgba(255,0,0,${alpha})`);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+}
+
+function render(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#4a382a";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(MARGIN, MARGIN);
+  drawScenery();
+  drawBackground();
+  drawFence();
+  if (debugSmell) drawSmellHeatmap();
+  if (selectedPlant && tooltipEl.style.display === "block") drawAttackRange(selectedPlant);
+  rangeEffects.forEach(drawRangeEffect);
+  plants.forEach(drawPlant);
+  bugs.forEach(drawBug);
+  projectiles.forEach(drawProjectile);
+  plantingEffects.forEach(drawFarmerTilling);
+  ctx.restore();
+  drawWarningVignette();
+  updateHUD();
+  maybeUpdateTooltip();
+}
+
+function updateHUD(){
+  moneyEl.textContent = "¥" + Math.floor(money);
+  scoreEl.textContent = "¥" + Math.floor(score);
+  waveEl.textContent = waveManager.waveNumber;
+  if (gameState === "ready"){
+    timerEl.textContent = "-";
+  } else if (waveManager.waveNumber === 0){
+    timerEl.textContent = "まもなく開始...";
+  } else {
+    timerEl.textContent = "ウェーブ " + waveManager.waveNumber + " (残り虫" + bugs.length + ")";
+  }
+  if (plants.length > 0 && plants.length <= CONFIG.warning.lowCount){
+    warnEl.style.display = "inline";
+    warnEl.textContent = "⚠ 植物残り" + plants.length + "株";
+  } else {
+    warnEl.style.display = "none";
+  }
+  updateWaveBar();
+  updatePaletteHighlight();
+}
+
+function updateWaveBar(){
+  if (gameState !== "playing"){
+    waveBarFillEl.style.width = "0%";
+    waveBarLabelEl.textContent = "-";
+    return;
+  }
+  const remaining = Math.max(0, waveManager.cycleTimer);
+  const pct = Math.max(0, Math.min(100, (remaining / waveManager.cycleDuration) * 100));
+  waveBarFillEl.style.width = pct + "%";
+  waveBarFillEl.style.background = pct > 50
+    ? "linear-gradient(90deg, #4caf50, #8bc34a)"
+    : pct > 20
+      ? "linear-gradient(90deg, #ffb300, #ffd740)"
+      : "linear-gradient(90deg, #e53935, #ff7043)";
+  waveBarLabelEl.textContent = "次のウェーブまで " + Math.ceil(remaining) + "秒";
+}
+
+// ---------- Tooltip ----------
+tooltipEl.innerHTML =
+  '<div class="tt-title" id="ttTitle"></div>' +
+  '<div>状態: <span id="ttState"></span></div>' +
+  '<div>HP: <span id="ttHp"></span></div>' +
+  '<div>売値: ¥<span id="ttSell"></span></div>' +
+  '<div class="tt-warn" id="ttWarn">根付き中(売却不可)</div>' +
+  '<button id="sellBtn">売却する</button>';
+const ttTitle = document.getElementById("ttTitle");
+const ttState = document.getElementById("ttState");
+const ttHp = document.getElementById("ttHp");
+const ttSell = document.getElementById("ttSell");
+const ttWarn = document.getElementById("ttWarn");
+const sellBtn = document.getElementById("sellBtn");
+sellBtn.addEventListener("click", () => {
+  if (selectedPlant && !isRooted(selectedPlant)){
+    sellPlant(selectedPlant);
+    hideTooltip();
+  }
+});
+
+function showTooltip(p){
+  selectedPlant = p;
+  tooltipEl.style.display = "block";
+  const rect = canvas.getBoundingClientRect();
+  const screenX = rect.left + (p.x + MARGIN) * (rect.width / canvas.width);
+  const screenY = rect.top + (p.y + MARGIN) * (rect.height / canvas.height);
+  positionTooltip(screenX, screenY);
+  updateTooltipContent();
+}
+function hideTooltip(){
+  selectedPlant = null;
+  tooltipEl.style.display = "none";
+}
+function positionTooltip(plantX, plantY){
+  const estWidth = 170, estHeight = 145, margin = 26;
+  let left = plantX - estWidth / 2;
+  let top = plantY - estHeight - margin;
+  if (top < 8) top = plantY + margin;
+  left = clampNum(left, 8, window.innerWidth - estWidth - 8);
+  top = clampNum(top, 8, window.innerHeight - estHeight - 8);
+  tooltipEl.style.left = left + "px";
+  tooltipEl.style.top = top + "px";
+}
+function updateTooltipContent(){
+  if (!selectedPlant) return;
+  const p = selectedPlant, def = CONFIG.plants[p.type];
+  const val = plantSellValue(p);
+  let stateLabel = "";
+  if (p.type === "mitsubana"){
+    const t = (performance.now() - p.plantedAt) / 1000;
+    stateLabel = t < def.sell.peakTime ? "成長中" : (t < def.sell.peakTime + 8 ? "満開(売り時!)" : "しおれ気味");
+  } else if (def.growth){
+    stateLabel = ["幼体", "成体", "完熟"][p.stage] + (p.bloated ? "(満腹)" : "");
+  } else {
+    stateLabel = "壁";
+  }
+  const rooted = isRooted(p);
+  ttTitle.textContent = def.label;
+  ttState.textContent = stateLabel;
+  ttHp.textContent = Math.ceil(p.hp) + "/" + Math.ceil(p.maxHp);
+  ttSell.textContent = val;
+  ttWarn.style.display = rooted ? "block" : "none";
+  sellBtn.style.display = rooted ? "none" : "inline-block";
+}
+function maybeUpdateTooltip(){
+  if (!selectedPlant || tooltipEl.style.display !== "block") return;
+  const now = performance.now();
+  if (now - lastTooltipUpdate > 250){
+    lastTooltipUpdate = now;
+    updateTooltipContent();
+  }
+}
+
+// ---------- Palette / input ----------
+const PLANT_ORDER = ["mitsubana", "flytrap", "pitcher", "thorn"];
+function getBaseCombatStats(type){
+  const def = CONFIG.plants[type];
+  if (!def.predation) return null;
+  const base = Array.isArray(def.predation) ? def.predation[0] : def.predation;
+  return {
+    dmg: base.dmg,
+    speed: Math.round((1 / base.interval) * 10) / 10,
+    range: Math.round((base.range / CONFIG.grid.cell) * 10) / 10
+  };
+}
+function buildPalette(){
+  paletteEl.innerHTML = "";
+  PLANT_ORDER.forEach(type => {
+    const def = CONFIG.plants[type];
+    const stats = getBaseCombatStats(type);
+    const statsHtml = stats
+      ? '<div class="pstats">' +
+          '<span>威力<b> ' + stats.dmg + '</b></span>' +
+          '<span>速度<b> ' + stats.speed + '</b>/秒</span>' +
+          '<span>射程<b> ' + stats.range + '</b>マス</span>' +
+        '</div>'
+      : '';
+    const btn = document.createElement("div");
+    btn.className = "palette-btn";
+    btn.dataset.type = type;
+    btn.innerHTML =
+      '<div class="swatch" style="background:' + def.color + '"></div>' +
+      '<div class="pname">' + def.label + '</div>' +
+      '<div class="pcost">¥' + def.cost + '</div>' +
+      '<div class="pdesc">' + def.desc + '</div>' +
+      statsHtml;
+    btn.addEventListener("click", () => {
+      if (gameState !== "playing") return;
+      selectedPlacementType = (selectedPlacementType === type) ? null : type;
+      hideTooltip();
+      updatePaletteHighlight();
+    });
+    paletteEl.appendChild(btn);
+  });
+}
+function updatePaletteHighlight(){
+  document.querySelectorAll(".palette-btn").forEach(btn => {
+    const type = btn.dataset.type;
+    btn.classList.toggle("selected", selectedPlacementType === type);
+    btn.classList.toggle("disabled", money < CONFIG.plants[type].cost);
+  });
+}
+
+function onCanvasClick(e){
+  if (gameState !== "playing") return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+  const cx = (e.clientX - rect.left) * scaleX - MARGIN;
+  const cy = (e.clientY - rect.top) * scaleY - MARGIN;
+  const gx = Math.floor(cx / CONFIG.grid.cell), gy = Math.floor(cy / CONFIG.grid.cell);
+  if (gx < 0 || gy < 0 || gx >= CONFIG.grid.cols || gy >= CONFIG.grid.rows) return;
+
+  const existing = plantGrid[gy][gx];
+  if (existing){
+    showTooltip(existing);
+    selectedPlacementType = null;
+    updatePaletteHighlight();
+    return;
+  }
+  hideTooltip();
+  if (selectedPlacementType){
+    tryPlacePlant(selectedPlacementType, gx, gy);
+  }
+}
+
+canvas.addEventListener("click", onCanvasClick);
+debugChk.addEventListener("change", () => { debugSmell = debugChk.checked; });
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  getAudioCtx();
+  instructionsEl.style.display = "none";
+  resetGame();
+});
+document.getElementById("retryBtn").addEventListener("click", () => {
+  getAudioCtx();
+  resetGame();
+});
+
+// ---------- Reset / bootstrap ----------
+function resetGame(){
+  money = CONFIG.economy.startMoney;
+  score = 0;
+  plants = [];
+  bugs = [];
+  projectiles = [];
+  plantingEffects = [];
+  rangeEffects = [];
+  plantGrid = makeGrid();
+  smellField = new Float32Array(CONFIG.grid.cols * CONFIG.grid.rows);
+  selectedPlant = null;
+  selectedPlacementType = null;
+  everHadMultiplePlants = false;
+  hideTooltip();
+  waveManager.waveNumber = 0;
+  waveManager.cycleTimer = CONFIG.waves.prepTimeBase;
+  waveManager.cycleDuration = CONFIG.waves.prepTimeBase;
+  waveManager.spawning = false;
+  waveManager.spawnedCount = 0;
+  waveManager.totalToSpawn = 0;
+  waveManager.spawnTimer = 0;
+  gameOverEl.style.display = "none";
+  gameState = "playing";
+  updatePaletteHighlight();
+}
+
+buildPalette();
+updatePaletteHighlight();
+
+let lastTs = 0;
+function frame(ts){
+  if (!lastTs) lastTs = ts;
+  let dt = (ts - lastTs) / 1000;
+  lastTs = ts;
+  dt = Math.min(dt, 0.05);
+  if (gameState === "playing") update(dt);
+  render();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>
