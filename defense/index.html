@@ -82,22 +82,32 @@
     text-shadow: 0 1px 0 rgba(255,255,255,0.3);
   }
 
+  #plantInfo {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: #2c2419;
+    border: 1px solid #5a4632;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #d7c8a0;
+    line-height: 1.5;
+  }
   #palette {
     width: 100%;
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 8px;
   }
   .palette-btn {
-    flex: 1 1 140px;
-    max-width: 170px;
+    position: relative;
     background: #2c2419;
     border: 2px solid #5a4632;
     border-radius: 8px;
     color: #f0e6d2;
-    padding: 8px;
+    padding: 6px 2px;
     cursor: pointer;
     text-align: center;
     transition: border-color 0.15s, transform 0.1s;
@@ -105,12 +115,24 @@
   .palette-btn:hover { border-color: #e8c468; }
   .palette-btn.selected { border-color: #ffe066; background: #40361f; transform: translateY(-2px); }
   .palette-btn.disabled { opacity: 0.4; cursor: not-allowed; }
-  .palette-btn .pname { font-weight: bold; font-size: 14px; }
-  .palette-btn .pcost { font-size: 12px; color: #e8c468; }
-  .palette-btn .pdesc { font-size: 10px; color: #b7c9a8; margin-top: 2px; }
-  .palette-btn .pstats { font-size: 10px; color: #d7c8a0; margin-top: 4px; display: flex; justify-content: space-between; gap: 4px; }
-  .palette-btn .pstats span b { color: #ffe066; font-weight: normal; }
-  .swatch { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 4px; }
+  .palette-btn .pname { font-weight: bold; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .palette-btn .pcost { font-size: 10px; color: #e8c468; }
+  .palette-btn .plock { display: none; font-size: 9px; color: #ff8a65; }
+  .palette-btn.locked .plock { display: block; }
+  .palette-btn.locked .pcost { display: none; }
+  .swatch { width: 18px; height: 18px; border-radius: 50%; margin: 0 auto 3px; }
+
+  #speedBtn {
+    background: #40361f;
+    border: 1px solid #5a4632;
+    border-radius: 5px;
+    color: #ffe066;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  #speedBtn:hover { border-color: #e8c468; }
 
   #tooltip {
     position: fixed;
@@ -138,6 +160,26 @@
     pointer-events: auto;
   }
   #tooltip button:hover { background: #66bb6a; }
+
+  #toast {
+    position: fixed;
+    top: 18%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(20,23,15,0.94);
+    border: 2px solid #ffd740;
+    border-radius: 8px;
+    padding: 10px 18px;
+    z-index: 60;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 80vw;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast b { display: block; color: #ffd740; font-size: 15px; margin-bottom: 2px; }
+  #toast span { font-size: 12px; color: #d7c8a0; }
 
   .overlay {
     position: fixed; inset: 0;
@@ -173,11 +215,12 @@
 <div id="app">
   <div id="hud">
     <span class="stat">所持金: <b id="moneyEl">¥0</b></span>
-    <span class="stat">スコア(累計売上): <b id="scoreEl">¥0</b></span>
+    <span class="stat">スコア: <b id="scoreEl">¥0</b></span>
     <span class="stat">ウェーブ: <b id="waveEl">0</b></span>
     <span class="stat" id="timerEl">-</span>
     <span class="stat" id="warnBadge">⚠ 植物残り0株</span>
-    <label id="debugToggle"><input type="checkbox" id="debugSmellChk"> 匂い場デバッグ表示</label>
+    <button id="speedBtn" type="button">▶ 1x</button>
+    <label id="debugToggle"><input type="checkbox" id="debugSmellChk"> 匂い場</label>
   </div>
 
   <div id="canvasWrap">
@@ -189,19 +232,24 @@
     <span id="waveBarLabel">-</span>
   </div>
 
+  <div id="plantInfo"></div>
+
   <div id="palette"></div>
 </div>
 
 <div id="tooltip"></div>
+<div id="toast"><b id="toastTitle"></b><span id="toastBody"></span></div>
 
 <div class="overlay" id="instructionsOverlay">
   <div class="overlay-box">
     <h2>食虫植物タワーディフェンス</h2>
     <p>
-      1. 空いているマスをクリックして植物を配置しよう<br>
-      2. 蜜花が虫をおびき寄せ、ピストルバナ / ウツボカズラが虫を捕食する<br>
-      3. 育った植物は売り頃にクリック→売却して資金を稼ごう
+      1. 空きマスをタップして植物を配置。イバラで迷路を作ろう<br>
+      2. 蜜花が虫をおびき寄せ、食虫植物たちが迎え撃つ<br>
+      3. 虫を食べて育った植物は売り時にタップ→売却で稼ごう<br>
+      4. ウェーブが進むと新しい植物が解禁。7の倍数でボス来襲!
     </p>
+    <p id="titleBest" style="text-align:center; color:#ffd740;"></p>
     <button id="startBtn">はじめる</button>
   </div>
 </div>
@@ -210,7 +258,7 @@
   <div class="overlay-box" id="gameOverBox">
     <h2>ゲームオーバー</h2>
     <p>畑の植物が食べ尽くされてしまった…</p>
-    <p>最終スコア: ¥<span id="finalScoreEl">0</span><br>生存ウェーブ: <span id="finalWaveEl">0</span></p>
+    <p>最終スコア: ¥<span id="finalScoreEl">0</span><br>生存ウェーブ: <span id="finalWaveEl">0</span><br><span id="finalBestEl"></span></p>
     <button id="retryBtn">もう一度挑戦</button>
   </div>
 </div>
@@ -225,15 +273,40 @@ const CONFIG = {
   root: { time: 5, dmgMult: 2 },
   smell: { falloffK: 0.05, jitter: 18, minContribution: 0.05 },
   warning: { lowCount: 3, lastStandHpMult: 2 },
+  // ---- 植物12種 (DTDの砲台バランスを翻案) ----
+  // 共通: cost/smell/maxHp/sell系。predation配列 = 成長3段階の攻撃性能。
+  // 特殊フラグ: projectile(種弾), airOnly(対空専用), multi(同時攻撃数),
+  //   slow{factor,duration}(冷気), poison{dps,duration}(毒), stun{duration}(麻痺),
+  //   boost[段階倍率](隣接バフ), mine{triggerRange,blastRange,dmg}(一回限り地雷)
   plants: {
-    mitsubana: {
+    mitsubana: { // 換金・誘引の基本 (経済の核)
       label: "蜜花", cost: 20, smell: 120, maxHp: 20, color: "#ffb3d9",
-      desc: "虫を誘引・売却用",
-      sell: { base: 8, peak: 40, peakTime: 25, floor: 24, declineDuration: 60 }
+      desc: "虫を誘引する換金草。開花時が売り時",
+      sell: { base: 8, peak: 40, peakTime: 25, floor: 24, declineDuration: 60 },
+      unlockWave: 0
     },
-    flytrap: {
+    thorn: { // Pellet(壁)相当: 最安の迷路部材
+      label: "イバラ", cost: 5, smell: 0, maxHp: 30, color: "#8d6e63",
+      desc: "壁。迷路づくりの基本部材",
+      sellFlat: 1,
+      predation: { dmg: 1, interval: 1.0, range: 26 },
+      unlockWave: 0
+    },
+    snapper: { // Squirt相当: 攻撃の主軸。安い・速い単体攻撃
+      label: "ハエトリソウ", cost: 30, smell: 20, maxHp: 35, color: "#66bb6a",
+      desc: "単体速射。攻撃の主軸",
+      growth: { toStage1: 3, toStage2: 7, overfeedBloat: 5 },
+      sellByStage: [12, 45, 85],
+      predation: [
+        { dmg: 4, interval: 0.5, range: 60 },
+        { dmg: 7, interval: 0.45, range: 66 },
+        { dmg: 12, interval: 0.4, range: 72 }
+      ],
+      bloatMult: 2.0, unlockWave: 0
+    },
+    flytrap: { // Dart相当: 長射程・種弾範囲攻撃
       label: "ピストルバナ", cost: 50, smell: 30, maxHp: 40, color: "#4caf50",
-      desc: "範囲・遠距離・種弾速射",
+      desc: "種弾を発射。着弾点で範囲ダメージ",
       growth: { toStage1: 2, toStage2: 5, overfeedBloat: 4 },
       sellByStage: [20, 70, 125],
       predation: [
@@ -241,11 +314,57 @@ const CONFIG = {
         { dmg: 8, interval: 0.7, range: 95 },
         { dmg: 13, interval: 0.5, range: 105 }
       ],
-      aoe: true, projectile: true, projectileSpeed: 260, bloatMult: 2.0
+      aoe: true, projectile: true, projectileSpeed: 260, bloatMult: 2.0, unlockWave: 0
     },
-    pitcher: {
+    mint: { // Frost相当: 範囲スロウ
+      label: "ヒヤシミント", cost: 40, smell: 10, maxHp: 30, color: "#80deea",
+      desc: "冷気で範囲内の虫を減速させる",
+      growth: { toStage1: 3, toStage2: 7, overfeedBloat: 6 },
+      sellByStage: [16, 50, 95],
+      predation: [
+        { dmg: 1, interval: 1.5, range: 70 },
+        { dmg: 2, interval: 1.5, range: 76 },
+        { dmg: 3, interval: 1.5, range: 84 }
+      ],
+      aoe: true, slowByStage: [
+        { factor: 0.6, duration: 1.2 },
+        { factor: 0.5, duration: 1.5 },
+        { factor: 0.4, duration: 1.8 }
+      ],
+      bloatMult: 1.5, unlockWave: 3
+    },
+    sundew: { // Ink相当: 毒(継続ダメージ)
+      label: "モウセンゴケ", cost: 60, smell: 25, maxHp: 35, color: "#ef5350",
+      desc: "粘毒を付着。じわじわ効く継続ダメージ",
+      growth: { toStage1: 3, toStage2: 6, overfeedBloat: 5 },
+      sellByStage: [25, 80, 140],
+      predation: [
+        { dmg: 2, interval: 1.2, range: 70 },
+        { dmg: 3, interval: 1.1, range: 76 },
+        { dmg: 5, interval: 1.0, range: 82 }
+      ],
+      poisonByStage: [
+        { dps: 3, duration: 3 },
+        { dps: 5, duration: 3.5 },
+        { dps: 8, duration: 4 }
+      ],
+      bloatMult: 1.8, unlockWave: 5
+    },
+    dandelion: { // Swarm相当: 対空専用・同時多体攻撃
+      label: "ワタゲタンポポ", cost: 70, smell: 15, maxHp: 30, color: "#fff9c4",
+      desc: "対空専用。綿毛で飛行する虫を同時撃墜",
+      growth: { toStage1: 3, toStage2: 6, overfeedBloat: 5 },
+      sellByStage: [30, 90, 160],
+      predation: [
+        { dmg: 5, interval: 0.8, range: 120 },
+        { dmg: 9, interval: 0.75, range: 130 },
+        { dmg: 16, interval: 0.7, range: 140 }
+      ],
+      airOnly: true, multi: 3, bloatMult: 1.8, unlockWave: 4
+    },
+    pitcher: { // Bash相当: 狭範囲・全体同時・高火力
       label: "ウツボカズラ", cost: 120, smell: 60, maxHp: 60, color: "#9c27b0",
-      desc: "範囲・低速・高火力",
+      desc: "周囲の虫を丸ごと消化する高火力",
       growth: { toStage1: 3, toStage2: 7, overfeedBloat: 5 },
       sellByStage: [50, 150, 300],
       predation: [
@@ -253,47 +372,143 @@ const CONFIG = {
         { dmg: 15, interval: 1.3, range: 66 },
         { dmg: 26, interval: 1.0, range: 76 }
       ],
-      aoe: true, bloatMult: 1.8
+      aoe: true, bloatMult: 1.8, unlockWave: 6
     },
-    thorn: {
-      label: "イバラ", cost: 5, smell: 0, maxHp: 30, color: "#8d6e63",
-      desc: "壁・迷路構築用",
-      sellFlat: 1,
-      predation: { dmg: 1, interval: 1.0, range: 26 }
+    chestnut: { // Snap相当: 一回限りの地雷。踏まれると大爆発
+      label: "バクダングリ", cost: 45, smell: 0, maxHp: 25, color: "#a1887f",
+      desc: "地雷。虫が触れると大爆発(一回限り)",
+      sellFlat: 5,
+      mine: { triggerRange: 30, blastRange: 80, dmg: 70 },
+      unlockWave: 8
+    },
+    lavender: { // Boost相当: 隣接8マスの植物の攻撃力を強化
+      label: "ラベンダー", cost: 100, smell: 40, maxHp: 30, color: "#b39ddb",
+      desc: "隣接する植物の攻撃力を高める香り",
+      growthByTime: [30, 70],
+      sellByStage: [40, 110, 200],
+      boostByStage: [1.25, 1.4, 1.6],
+      unlockWave: 10
+    },
+    orchid: { // Sniper(Pellet最終)相当: 超長射程・高威力・低速の狙撃
+      label: "スナイパーラン", cost: 150, smell: 20, maxHp: 40, color: "#f48fb1",
+      desc: "畑全体を狙う長距離狙撃。単体高威力",
+      growth: { toStage1: 3, toStage2: 6, overfeedBloat: 5 },
+      sellByStage: [60, 180, 350],
+      predation: [
+        { dmg: 30, interval: 2.2, range: 220 },
+        { dmg: 55, interval: 2.0, range: 240 },
+        { dmg: 100, interval: 1.8, range: 260 }
+      ],
+      projectile: true, projectileSpeed: 520, bloatMult: 1.6, unlockWave: 12
+    },
+    rafflesia: { // Quake(麻痺)+超誘引: 最終盤の要
+      label: "ラフレシア", cost: 200, smell: 250, maxHp: 90, color: "#d32f2f",
+      desc: "超誘引+麻痺ガス。虫を足止めする大輪",
+      growth: { toStage1: 4, toStage2: 9, overfeedBloat: 6 },
+      sellByStage: [80, 240, 450],
+      predation: [
+        { dmg: 3, interval: 2.5, range: 65 },
+        { dmg: 5, interval: 2.2, range: 72 },
+        { dmg: 8, interval: 2.0, range: 80 }
+      ],
+      aoe: true, stunByStage: [
+        { duration: 0.8 },
+        { duration: 1.0 },
+        { duration: 1.3 }
+      ],
+      bloatMult: 1.6, unlockWave: 14
     }
   },
+  // ---- 敵12種 (DTDのクリープを翻案) ----
+  // spawnEdge: 種族ごとの固定出現辺 / waveStart: 初登場 / weight: 混合比率
+  // 特殊: flying(柵無視・飛行), ignoreFence(柵を飛び越える), armor(ダメージ軽減),
+  //   splitOnDeath(倒すと分裂), slowImmune(スロウ無効), burst(まとめて出現), boss
   bugs: {
-    // spawnEdge: どの辺から出現するか(種族ごとに固定) / waveStart: 初登場ウェーブ / weight: 出現比率
-    fly: {
+    fly: { // Normal
       label: "ハエ", hp: 10, speed: 44, biteDmg: 4, biteInterval: 1.0, size: 7, flying: true,
       spawnEdge: "top", waveStart: 1, weight: 1.0,
-      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.15 }
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.15 },
+      intro: "基本の飛行敵。柵を飛び越える"
     },
-    beetle: {
+    worm: { // Fast(弱)
+      label: "みみず", hp: 12, speed: 36, biteDmg: 5, biteInterval: 0.9, size: 7, flying: false,
+      spawnEdge: "right", waveStart: 2, weight: 0.7,
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.13 },
+      intro: "地を這う速い敵。右からしか来ない"
+    },
+    beetle: { // Normal(硬)
       label: "甲虫", hp: 32, speed: 22, biteDmg: 11, biteInterval: 1.2, size: 10, flying: false,
-      spawnEdge: "left", waveStart: 2, weight: 0.7,
-      feedThreshold: 2, growth: { hp: 1.35, speed: 1.05, size: 1.12 }
+      spawnEdge: "left", waveStart: 3, weight: 0.7,
+      feedThreshold: 2, growth: { hp: 1.35, speed: 1.05, size: 1.12 },
+      intro: "硬くて強い噛みつき。左から来る"
     },
-    slug: {
+    slug: { // 遅くて高耐久
       label: "なめくじ", hp: 48, speed: 11, biteDmg: 9, biteInterval: 1.4, size: 9, flying: false,
-      spawnEdge: "bottom", waveStart: 3, weight: 0.6,
-      feedThreshold: 2, growth: { hp: 1.35, speed: 1.03, size: 1.12 }
+      spawnEdge: "bottom", waveStart: 4, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.35, speed: 1.03, size: 1.12 },
+      intro: "遅いが高耐久。下から来る"
     },
-    worm: {
-      label: "みみず", hp: 14, speed: 34, biteDmg: 5, biteInterval: 0.9, size: 7, flying: false,
-      spawnEdge: "right", waveStart: 4, weight: 0.6,
-      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.13 }
+    hornet: { // Fast + Flying
+      label: "スズメバチ", hp: 16, speed: 62, biteDmg: 6, biteInterval: 0.8, size: 8, flying: true,
+      spawnEdge: "top", waveStart: 5, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.04, size: 1.13 },
+      intro: "高速の飛行敵。対空が薄いと危険"
+    },
+    ant: { // Group: まとめて出現する弱い群れ
+      label: "ありんこ", hp: 6, speed: 38, biteDmg: 3, biteInterval: 0.8, size: 5, flying: false,
+      spawnEdge: "right", waveStart: 6, weight: 0.6, burst: 5,
+      feedThreshold: 3, growth: { hp: 1.25, speed: 1.04, size: 1.12 },
+      intro: "群れで押し寄せる。範囲攻撃が有効"
+    },
+    grasshopper: { // Hopper: 柵を飛び越える地上敵
+      label: "バッタ", hp: 20, speed: 42, biteDmg: 6, biteInterval: 1.0, size: 8, flying: false, ignoreFence: true,
+      spawnEdge: "bottom", waveStart: 8, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.05, size: 1.13 },
+      intro: "柵を飛び越えてどこからでも侵入!"
+    },
+    pillbug: { // Dark: ダメージ軽減の装甲
+      label: "ダンゴムシ", hp: 40, speed: 18, biteDmg: 8, biteInterval: 1.2, size: 9, flying: false, armor: 3,
+      spawnEdge: "left", waveStart: 9, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.35, speed: 1.04, size: 1.12 },
+      intro: "装甲持ち。弱い攻撃を弾いてしまう"
+    },
+    bagworm: { // Spawn: 倒すと2匹に分裂
+      label: "ミノムシ", hp: 26, speed: 20, biteDmg: 7, biteInterval: 1.1, size: 8, flying: false, splitOnDeath: 1,
+      spawnEdge: "right", waveStart: 10, weight: 0.6,
+      feedThreshold: 2, growth: { hp: 1.3, speed: 1.04, size: 1.12 },
+      intro: "倒すと2匹に分裂する。とどめに注意"
+    },
+    snail: { // Immune: スロウ無効
+      label: "カタツムリ", hp: 70, speed: 9, biteDmg: 10, biteInterval: 1.5, size: 10, flying: false, slowImmune: true,
+      spawnEdge: "bottom", waveStart: 11, weight: 0.5,
+      feedThreshold: 2, growth: { hp: 1.35, speed: 1.03, size: 1.1 },
+      intro: "冷気が効かない殻。超高耐久"
+    },
+    locust: { // Flying group
+      label: "イナゴ", hp: 12, speed: 52, biteDmg: 5, biteInterval: 0.9, size: 7, flying: true,
+      spawnEdge: "top", waveStart: 12, weight: 0.6, burst: 4,
+      feedThreshold: 3, growth: { hp: 1.28, speed: 1.04, size: 1.12 },
+      intro: "飛行する群れ。空の守りを固めよ"
+    },
+    boss: { // 7ウェーブごとの主
+      label: "ヌシカブト", hp: 260, speed: 13, biteDmg: 30, biteInterval: 1.3, size: 16, flying: false, armor: 2,
+      spawnEdge: "left", waveStart: 999, weight: 0,
+      feedThreshold: 3, growth: { hp: 1.3, speed: 1.02, size: 1.08 },
+      intro: "7ウェーブごとに現れるヌシ"
     }
   },
   waves: {
     prepTimeBase: 15, prepTimeMin: 9, prepTimeDecayPerWave: 0.3,
-    countBase: 5, countGrowthPerWave: 1.5,
+    countBase: 5, countGrowthPerWave: 1.2,
     spawnInterval: 1.1,
-    hpGrowthPerWave: 0.09, speedGrowthPerWave: 0.02, dmgGrowthPerWave: 0.05,
-    easyWaves: 3, easyMultiplier: 0.45
+    hpGrowthPerWave: 0.11, speedGrowthPerWave: 0.015, dmgGrowthPerWave: 0.05,
+    easyWaves: 3, easyMultiplier: 0.45,
+    bossEvery: 7, bossHpWaveMult: 0.35, // ボスHP = base * (1 + wave*bossHpWaveMult)
+    themeRatio: 0.7 // ウェーブのテーマ種族が占める割合
   }
 };
 CONFIG.plants.flytrap.aoeRadius = CONFIG.grid.cell * 1;
+CONFIG.plants.orchid.aoeRadius = 12; // 狙撃は単体ヒット相当の極小爆発
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -309,6 +524,18 @@ const instructionsEl = document.getElementById("instructionsOverlay");
 const gameOverEl = document.getElementById("gameOverOverlay");
 const debugChk = document.getElementById("debugSmellChk");
 const paletteEl = document.getElementById("palette");
+const toastEl = document.getElementById("toast");
+const toastTitleEl = document.getElementById("toastTitle");
+const toastBodyEl = document.getElementById("toastBody");
+
+let toastTimer = null;
+function showToast(title, body){
+  toastTitleEl.textContent = title;
+  toastBodyEl.textContent = body || "";
+  toastEl.classList.add("show");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
+}
 
 // ---------- Audio ----------
 let audioCtx = null;
@@ -414,6 +641,84 @@ function playWaveStartSound(){
   noise.stop(now + duration);
 }
 
+function playSniperSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(1400, now);
+  osc.frequency.exponentialRampToValueAtTime(300, now + 0.07);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.22, now + 0.006);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.11);
+}
+
+function playMineSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const duration = 0.35;
+  const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(2200, now);
+  filter.frequency.exponentialRampToValueAtTime(200, now + duration);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.4, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now + duration);
+}
+
+function playBossSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(70, now);
+  osc.frequency.linearRampToValueAtTime(110, now + 0.5);
+  osc.frequency.linearRampToValueAtTime(60, now + 1.0);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(0.2, now + 0.15);
+  gain.gain.linearRampToValueAtTime(0.001, now + 1.0);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 1.05);
+}
+
+function playSellSound(){
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  [660, 990].forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    const t0 = now + i * 0.07;
+    gain.gain.setValueAtTime(0.001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.2, t0 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + 0.13);
+  });
+}
+
 const FW = CONFIG.grid.cols * CONFIG.grid.cell;
 const FH = CONFIG.grid.rows * CONFIG.grid.cell;
 const MARGIN = CONFIG.grid.margin;
@@ -425,6 +730,7 @@ let bugs = [];
 let projectiles = [];
 let plantingEffects = [];
 let rangeEffects = [];
+let pendingBugs = []; // 分裂などでフレーム中に湧いた虫の受け皿
 const HOE_SWINGS = 2;
 let plantGrid = makeGrid();
 let smellField = new Float32Array(CONFIG.grid.cols * CONFIG.grid.rows);
@@ -465,7 +771,7 @@ function plantRadius(p){
 
 function plantSellValue(p){
   const def = CONFIG.plants[p.type];
-  if (p.type === "mitsubana"){
+  if (def.sell){ // 時間経過で売値が変わる植物(蜜花)
     const t = (performance.now() - p.plantedAt) / 1000;
     const s = def.sell;
     if (t <= s.peakTime) return Math.round(s.base + (s.peak - s.base) * (t / s.peakTime));
@@ -484,22 +790,53 @@ function updatePlantGrowth(p){
   if (p.stage >= 2 && p.eatCount >= def.growth.toStage2 + def.growth.overfeedBloat) p.bloated = true;
 }
 
+// 時間で成長する植物(ラベンダー)の段階更新。update()から毎フレーム呼ぶ
+function updateTimedGrowth(p){
+  const def = CONFIG.plants[p.type];
+  if (!def.growthByTime) return;
+  const t = (performance.now() - p.plantedAt) / 1000;
+  if (p.stage < 1 && t >= def.growthByTime[0]) p.stage = 1;
+  if (p.stage < 2 && t >= def.growthByTime[1]) p.stage = 2;
+}
+
+// 隣接8マスのラベンダーによる攻撃力倍率
+function boostMultiplier(p){
+  let mult = 1;
+  for (let dy = -1; dy <= 1; dy++){
+    for (let dx = -1; dx <= 1; dx++){
+      if (dx === 0 && dy === 0) continue;
+      const nx = p.gx + dx, ny = p.gy + dy;
+      if (nx < 0 || ny < 0 || nx >= CONFIG.grid.cols || ny >= CONFIG.grid.rows) continue;
+      const nb = plantGrid[ny][nx];
+      if (nb && nb.type === "lavender" && !isRooted(nb)){
+        const boost = CONFIG.plants.lavender.boostByStage[nb.stage];
+        mult *= boost;
+      }
+    }
+  }
+  return Math.min(mult, 4); // DTD同様、最大4倍で頭打ち
+}
+
 function predationStats(p){
   const def = CONFIG.plants[p.type];
-  if (p.type === "thorn"){
-    return { dmg: def.predation.dmg, interval: def.predation.interval, range: def.predation.range, aoe: false };
-  }
-  const base = def.predation[p.stage];
-  const interval = p.bloated ? base.interval * def.bloatMult : base.interval;
+  if (!def.predation) return null;
+  const base = Array.isArray(def.predation) ? def.predation[p.stage] : def.predation;
+  const interval = p.bloated && def.bloatMult ? base.interval * def.bloatMult : base.interval;
   return {
-    dmg: base.dmg, interval, range: base.range, aoe: def.aoe,
-    projectile: !!def.projectile, projectileSpeed: def.projectileSpeed, aoeRadius: def.aoeRadius
+    dmg: base.dmg * boostMultiplier(p),
+    interval, range: base.range, aoe: def.aoe,
+    projectile: !!def.projectile, projectileSpeed: def.projectileSpeed, aoeRadius: def.aoeRadius,
+    airOnly: !!def.airOnly, multi: def.multi || 1,
+    slow: def.slowByStage ? def.slowByStage[p.stage] : null,
+    poison: def.poisonByStage ? def.poisonByStage[p.stage] : null,
+    stun: def.stunByStage ? def.stunByStage[p.stage] : null
   };
 }
 
 function tryPlacePlant(type, gx, gy){
   if (gameState !== "playing") return false;
   const def = CONFIG.plants[type];
+  if (waveManager.waveNumber < (def.unlockWave || 0)) return false;
   if (money < def.cost) return false;
   if (plantGrid[gy][gx]) return false;
   money -= def.cost;
@@ -521,6 +858,7 @@ function sellPlant(p){
   recomputeSmellField();
   if (selectedPlant === p) selectedPlant = null;
   plantingEffects.push({ x: p.x, y: p.y, timer: 0.7, maxTimer: 0.7 });
+  playSellSound();
   return true;
 }
 
@@ -587,15 +925,28 @@ function createBug(type, pos, mult){
     biteDmg: def.biteDmg * mult.dmg,
     biteInterval: def.biteInterval,
     size: def.size,
+    armor: def.armor || 0,
+    splitsLeft: def.splitOnDeath || 0,
+    slowUntil: 0, slowFactor: 1, stunUntil: 0,
+    poison: null,
     feedCount: 0, target: null, lastBite: 0, dead: false,
     wanderAngle: Math.random() * Math.PI * 2
   };
 }
 
+function isStunned(bug){
+  return performance.now() < bug.stunUntil;
+}
+
+function effectiveSpeed(bug){
+  const slowed = performance.now() < bug.slowUntil;
+  return bug.speed * (slowed ? bug.slowFactor : 1);
+}
+
 function moveToward(bug, tx, ty, dt){
   const dx = tx - bug.x, dy = ty - bug.y;
   const d = Math.hypot(dx, dy) || 1;
-  const step = bug.speed * dt;
+  const step = effectiveSpeed(bug) * dt;
   const s = Math.min(step, d);
   bug.x += (dx / d) * s;
   bug.y += (dy / d) * s;
@@ -610,12 +961,14 @@ function findNearestPlant(bug){
   return best;
 }
 
+// 捕食による成長分裂(植物を食べきった時)
 function splitBug(bug, newBugs){
   const half = Math.max(4, Math.floor(bug.hp / 2));
   for (let i = 0; i < 2; i++){
     newBugs.push(Object.assign({}, bug, {
       hp: half, maxHp: half,
       size: bug.size * 0.8,
+      poison: null, slowUntil: 0, stunUntil: 0,
       feedCount: 0, target: null, lastBite: 0, dead: false,
       x: clampNum(bug.x + (Math.random() - 0.5) * 24, -MARGIN, FW + MARGIN),
       y: clampNum(bug.y + (Math.random() - 0.5) * 24, -MARGIN, FH + MARGIN),
@@ -623,6 +976,51 @@ function splitBug(bug, newBugs){
     }));
   }
   bug.dead = true;
+}
+
+// 全ダメージの入口。装甲・死亡・分裂(ミノムシ)・捕食カウントを一元処理
+function damageBug(bug, rawDmg, sourcePlant){
+  if (bug.dead || bug.hp <= 0) return false;
+  const dmg = Math.max(1, rawDmg - bug.armor);
+  bug.hp -= dmg;
+  if (bug.hp > 0) return false;
+  bug.dead = true;
+  if (bug.splitsLeft > 0){
+    // 倒すと2匹に分裂(体力は元の半分・分裂回数を1消費)
+    const childHp = Math.max(3, Math.floor(bug.maxHp / 2));
+    for (let i = 0; i < 2; i++){
+      const child = Object.assign({}, bug, {
+        hp: childHp, maxHp: childHp,
+        size: bug.size * 0.85,
+        splitsLeft: bug.splitsLeft - 1,
+        poison: null, slowUntil: 0, stunUntil: 0,
+        target: null, lastBite: 0, dead: false,
+        x: clampNum(bug.x + (Math.random() - 0.5) * 20, -MARGIN, FW + MARGIN),
+        y: clampNum(bug.y + (Math.random() - 0.5) * 20, -MARGIN, FH + MARGIN),
+        wanderAngle: Math.random() * Math.PI * 2
+      });
+      pendingBugs.push(child);
+    }
+  }
+  if (sourcePlant && plantGrid[sourcePlant.gy] && plantGrid[sourcePlant.gy][sourcePlant.gx] === sourcePlant){
+    sourcePlant.eatCount = (sourcePlant.eatCount || 0) + 1;
+    updatePlantGrowth(sourcePlant);
+  }
+  return true;
+}
+
+function applySlow(bug, slow){
+  if (CONFIG.bugs[bug.type].slowImmune) return;
+  bug.slowUntil = performance.now() + slow.duration * 1000;
+  bug.slowFactor = slow.factor;
+}
+
+function applyPoison(bug, poison, sourcePlant){
+  bug.poison = { dps: poison.dps, until: performance.now() + poison.duration * 1000, src: sourcePlant };
+}
+
+function applyStun(bug, stun){
+  bug.stunUntil = performance.now() + stun.duration * 1000;
 }
 
 // ---------- Fence (grounded bugs only cross at the 4 gate openings) ----------
@@ -677,8 +1075,10 @@ function gateWaypoint(bug){
 }
 
 function updateBug(bug, dt, newBugs){
-  const grounded = !CONFIG.bugs[bug.type].flying;
-  if (grounded && !insideFarm(bug.x, bug.y)){
+  if (isStunned(bug)) return; // 麻痺中は移動も噛みつきもしない
+  const def = CONFIG.bugs[bug.type];
+  const fenced = !def.flying && !def.ignoreFence; // バッタは柵を飛び越える
+  if (fenced && !insideFarm(bug.x, bug.y)){
     const px = bug.x, py = bug.y;
     const wp = gateWaypoint(bug);
     moveToward(bug, wp.x, wp.y, dt);
@@ -687,7 +1087,7 @@ function updateBug(bug, dt, newBugs){
   }
   const px = bug.x, py = bug.y;
   updateBugCore(bug, dt, newBugs);
-  if (grounded) enforceFence(bug, px, py);
+  if (fenced) enforceFence(bug, px, py);
 }
 
 function updateBugCore(bug, dt, newBugs){
@@ -749,8 +1149,8 @@ function updateBugCore(bug, dt, newBugs){
       return;
     }
     if (Math.random() < 0.02) bug.wanderAngle = Math.random() * Math.PI * 2;
-    bug.x += Math.cos(bug.wanderAngle) * bug.speed * dt * 0.5;
-    bug.y += Math.sin(bug.wanderAngle) * bug.speed * dt * 0.5;
+    bug.x += Math.cos(bug.wanderAngle) * effectiveSpeed(bug) * dt * 0.5;
+    bug.y += Math.sin(bug.wanderAngle) * effectiveSpeed(bug) * dt * 0.5;
     bug.x = clampNum(bug.x, -MARGIN, FW + MARGIN);
     bug.y = clampNum(bug.y, -MARGIN, FH + MARGIN);
     return;
@@ -770,13 +1170,35 @@ function updateBugCore(bug, dt, newBugs){
 }
 
 // ---------- Predation ----------
+function triggerMine(p, def){
+  const m = def.mine;
+  const trigger = bugs.some(b => !b.dead && Math.hypot(b.x - p.x, b.y - p.y) <= m.triggerRange);
+  if (!trigger) return;
+  playMineSound();
+  rangeEffects.push({ x: p.x, y: p.y, range: m.blastRange, color: "#ff7043", timer: 0.45, maxTimer: 0.45 });
+  bugs.forEach(b => {
+    if (!b.dead && Math.hypot(b.x - p.x, b.y - p.y) <= m.blastRange) damageBug(b, m.dmg, null);
+  });
+  // 一回限り: 爆発したら消滅(売却不可の消耗品)
+  plantGrid[p.gy][p.gx] = null;
+  plants = plants.filter(x => x !== p);
+  if (selectedPlant === p) hideTooltip();
+  recomputeSmellField();
+}
+
 function runPredation(){
   const now = performance.now();
-  for (const p of plants){
-    if (p.type === "mitsubana") continue;
+  for (const p of plants.slice()){
+    const def = CONFIG.plants[p.type];
+    if (def.mine){
+      if (!isRooted(p)) triggerMine(p, def);
+      continue;
+    }
     const stats = predationStats(p);
+    if (!stats) continue; // 蜜花・ラベンダーは攻撃しない
     if (now - p.lastAttack < stats.interval * 1000) continue;
-    const inRange = bugs.filter(b => !b.dead && Math.hypot(b.x - p.x, b.y - p.y) <= stats.range);
+    let inRange = bugs.filter(b => !b.dead && Math.hypot(b.x - p.x, b.y - p.y) <= stats.range);
+    if (stats.airOnly) inRange = inRange.filter(b => CONFIG.bugs[b.type].flying);
     if (inRange.length === 0) continue;
     p.lastAttack = now;
     p.eatAnim = 0.25;
@@ -785,7 +1207,7 @@ function runPredation(){
     if (stats.projectile){
       const angle = Math.atan2(target.y - p.y, target.x - p.x);
       p.aimAngle = angle;
-      playFireSound();
+      if (p.type === "orchid") playSniperSound(); else playFireSound();
       projectiles.push({
         x: p.x, y: p.y,
         targetX: target.x, targetY: target.y,
@@ -797,17 +1219,27 @@ function runPredation(){
         dead: false
       });
     } else if (stats.aoe){
-      playPitcherSound();
-      rangeEffects.push({ x: p.x, y: p.y, range: stats.range, color: CONFIG.plants[p.type].color, timer: 0.4, maxTimer: 0.4 });
+      if (p.type === "pitcher") playPitcherSound();
+      rangeEffects.push({ x: p.x, y: p.y, range: stats.range, color: def.color, timer: 0.4, maxTimer: 0.4 });
       inRange.forEach(b => {
-        b.hp -= stats.dmg;
-        if (b.hp <= 0 && !b.dead){ b.dead = true; p.eatCount = (p.eatCount || 0) + 1; }
+        if (stats.slow) applySlow(b, stats.slow);
+        if (stats.stun) applyStun(b, stats.stun);
+        damageBug(b, stats.dmg, p);
       });
-      updatePlantGrowth(p);
     } else {
-      target.hp -= stats.dmg;
-      if (target.hp <= 0 && !target.dead){ target.dead = true; p.eatCount = (p.eatCount || 0) + 1; }
-      updatePlantGrowth(p);
+      // 単体攻撃(multi指定があれば近い順に複数体)
+      const targets = inRange.slice(0, stats.multi);
+      targets.forEach(b => {
+        if (stats.slow) applySlow(b, stats.slow);
+        if (stats.poison) applyPoison(b, stats.poison, p);
+        damageBug(b, stats.dmg, p);
+      });
+      // 対空タンポポの攻撃線演出用
+      if (stats.multi > 1){
+        targets.forEach(b => {
+          rangeEffects.push({ x: p.x, y: p.y, lineTo: { x: b.x, y: b.y }, color: def.color, timer: 0.18, maxTimer: 0.18 });
+        });
+      }
     }
   }
 }
@@ -853,23 +1285,44 @@ function updateRangeEffects(dt){
 }
 
 function explodeProjectile(proj){
-  const hit = bugs.filter(b => !b.dead && Math.hypot(b.x - proj.x, b.y - proj.y) <= proj.aoeRadius);
-  hit.forEach(b => {
-    b.hp -= proj.dmg;
-    if (b.hp <= 0 && !b.dead){
-      b.dead = true;
-      const sp = proj.sourcePlant;
-      if (sp && plantGrid[sp.gy] && plantGrid[sp.gy][sp.gx] === sp){
-        sp.eatCount = (sp.eatCount || 0) + 1;
-        updatePlantGrowth(sp);
-      }
+  const sp = proj.sourcePlant;
+  const src = (sp && plantGrid[sp.gy] && plantGrid[sp.gy][sp.gx] === sp) ? sp : null;
+  bugs.forEach(b => {
+    if (!b.dead && Math.hypot(b.x - proj.x, b.y - proj.y) <= proj.aoeRadius){
+      damageBug(b, proj.dmg, src);
     }
   });
 }
 
 // ---------- Wave manager ----------
+// DTD式: 7ウェーブごとにボス。各ウェーブはテーマ種族(70%)+混合(30%)。
 // Waves trigger on a fixed schedule (cycleTimer) regardless of whether the
 // previous wave's bugs have been cleared; unspawned backlog carries over.
+function unlockedSpecies(w){
+  return Object.keys(CONFIG.bugs).filter(t => t !== "boss" && w >= CONFIG.bugs[t].waveStart);
+}
+
+function isBossWave(w){
+  return w > 0 && w % CONFIG.waves.bossEvery === 0;
+}
+
+// ウェーブwのテーマ種族(決定的: 予告と実際が一致する)
+function themeFor(w){
+  if (isBossWave(w)) return "boss";
+  const pool = unlockedSpecies(w);
+  return pool[(w - 1) % pool.length];
+}
+
+function pickWeighted(pool){
+  const total = pool.reduce((s, p) => s + p.weight, 0);
+  let r = Math.random() * total;
+  for (const p of pool){
+    r -= p.weight;
+    if (r <= 0) return p.type;
+  }
+  return pool[0].type;
+}
+
 const waveManager = {
   waveNumber: 0,
   cycleTimer: CONFIG.waves.prepTimeBase,
@@ -878,6 +1331,8 @@ const waveManager = {
   spawnedCount: 0,
   totalToSpawn: 0,
   spawnTimer: 0,
+  bossPending: false,
+  seenSpecies: {},
   update(dt){
     if (gameState !== "playing") return;
     if (this.spawning){
@@ -895,31 +1350,69 @@ const waveManager = {
   startWave(){
     this.waveNumber++;
     const w = this.waveNumber;
+    // 新しく解禁された植物を通知
+    const unlocked = Object.keys(CONFIG.plants).filter(t => (CONFIG.plants[t].unlockWave || 0) === w);
+    if (unlocked.length){
+      showToast("新しい植物が解禁: " + unlocked.map(t => CONFIG.plants[t].label).join("・"), "");
+      updatePaletteHighlight();
+    }
     const easy = w <= CONFIG.waves.easyWaves ? CONFIG.waves.easyMultiplier : 1;
-    const newCount = Math.max(3, Math.round((CONFIG.waves.countBase + (w - 1) * CONFIG.waves.countGrowthPerWave) * easy));
-    this.totalToSpawn = this.spawnedCount + newCount;
+    if (isBossWave(w)){
+      // ボスウェーブ: ボス1体 + 少数の随伴
+      this.bossPending = true;
+      this.totalToSpawn = this.spawnedCount + 4;
+      playBossSound();
+    } else {
+      const newCount = Math.max(3, Math.round((CONFIG.waves.countBase + (w - 1) * CONFIG.waves.countGrowthPerWave) * easy));
+      this.totalToSpawn = this.spawnedCount + newCount;
+      playWaveStartSound();
+    }
     this.spawnTimer = 0;
     this.spawning = true;
     const prepTime = Math.max(CONFIG.waves.prepTimeMin, CONFIG.waves.prepTimeBase - w * CONFIG.waves.prepTimeDecayPerWave);
     this.cycleDuration = prepTime;
     this.cycleTimer = prepTime;
-    playWaveStartSound();
+  },
+  spawnOne(type, mult){
+    const def = CONFIG.bugs[type];
+    if (!this.seenSpecies[type]){
+      this.seenSpecies[type] = true;
+      showToast("新しい敵: " + def.label + "!", def.intro || "");
+    }
+    // burst種(アリ/イナゴ)は1回の出現でまとめて湧く
+    const n = def.burst || 1;
+    for (let i = 0; i < n; i++){
+      const pos = edgeSpawnFor(type);
+      pos.x += (Math.random() - 0.5) * 26;
+      pos.y += (Math.random() - 0.5) * 26;
+      bugs.push(createBug(type, pos, mult));
+    }
   },
   doSpawn(){
     const w = this.waveNumber;
-    const pool = [];
-    for (const type of Object.keys(CONFIG.bugs)){
-      const def = CONFIG.bugs[type];
-      if (w >= def.waveStart) pool.push({ type, weight: def.weight });
+    const mult = waveMultipliers(w);
+    if (this.bossPending){
+      // ウェーブ先頭にボスを1体投入
+      this.bossPending = false;
+      const bossMult = {
+        hp: mult.hp * (1 + w * CONFIG.waves.bossHpWaveMult),
+        speed: mult.speed,
+        dmg: mult.dmg
+      };
+      if (!this.seenSpecies.boss){
+        this.seenSpecies.boss = true;
+        showToast("ヌシカブト出現!!", CONFIG.bugs.boss.intro);
+      }
+      bugs.push(createBug("boss", edgeSpawnFor("boss"), bossMult));
+      return;
     }
-    const total = pool.reduce((s, p) => s + p.weight, 0);
-    let r = Math.random() * total;
-    let chosen = pool[0].type;
-    for (const p of pool){
-      r -= p.weight;
-      if (r <= 0){ chosen = p.type; break; }
+    const theme = themeFor(w);
+    if (theme !== "boss" && Math.random() < CONFIG.waves.themeRatio){
+      this.spawnOne(theme, mult);
+      return;
     }
-    bugs.push(createBug(chosen, edgeSpawnFor(chosen), waveMultipliers(w)));
+    const pool = unlockedSpecies(w).map(t => ({ type: t, weight: CONFIG.bugs[t].weight }));
+    this.spawnOne(pickWeighted(pool), mult);
   }
 };
 
@@ -940,11 +1433,45 @@ function checkLoss(){
     triggerGameOver();
   }
 }
+function loadHighScore(){
+  try { return parseInt(localStorage.getItem("cptd_highscore") || "0", 10) || 0; }
+  catch (e) { return 0; }
+}
+function saveHighScore(v){
+  try { localStorage.setItem("cptd_highscore", String(v)); } catch (e) {}
+}
+
 function triggerGameOver(){
   gameState = "gameover";
-  document.getElementById("finalScoreEl").textContent = Math.floor(score);
+  const finalScore = Math.floor(score);
+  document.getElementById("finalScoreEl").textContent = finalScore;
   document.getElementById("finalWaveEl").textContent = waveManager.waveNumber;
+  const best = loadHighScore();
+  const bestEl = document.getElementById("finalBestEl");
+  if (finalScore > best){
+    saveHighScore(finalScore);
+    bestEl.textContent = "ハイスコア更新! ¥" + finalScore;
+  } else {
+    bestEl.textContent = "ベスト: ¥" + best;
+  }
   gameOverEl.style.display = "flex";
+}
+
+// 毒(継続ダメージ)のティック処理
+function tickPoison(dt){
+  const now = performance.now();
+  for (const b of bugs){
+    if (b.dead || !b.poison) continue;
+    if (now >= b.poison.until){ b.poison = null; continue; }
+    const src = b.poison.src;
+    const validSrc = (src && plantGrid[src.gy] && plantGrid[src.gy][src.gx] === src) ? src : null;
+    // 毒は装甲を貫通する(damageBugを通すと最低1保証で二重補正になるため直接)
+    b.hp -= b.poison.dps * dt;
+    if (b.hp <= 0 && !b.dead){
+      b.hp = 0.01; // damageBugの死亡処理(分裂・捕食カウント)に載せるため僅かに残す
+      damageBug(b, 999, validSrc);
+    }
+  }
 }
 
 // ---------- Main update ----------
@@ -953,14 +1480,17 @@ function update(dt){
   for (const p of plants){
     if (p.chewTimer > 0) p.chewTimer = Math.max(0, p.chewTimer - dt);
     if (p.eatAnim > 0) p.eatAnim = Math.max(0, p.eatAnim - dt);
+    updateTimedGrowth(p);
   }
   runPredation();
+  tickPoison(dt);
   const newBugs = [];
   for (const b of bugs){
     if (b.dead) continue;
     updateBug(b, dt, newBugs);
   }
-  bugs = bugs.filter(b => !b.dead && b.hp > 0).concat(newBugs);
+  bugs = bugs.filter(b => !b.dead && b.hp > 0).concat(newBugs, pendingBugs);
+  pendingBugs = [];
   updateProjectiles(dt);
   updatePlantingEffects(dt);
   updateRangeEffects(dt);
@@ -1105,10 +1635,10 @@ function drawSmellHeatmap(){
 
 function isAtPeakValue(p){
   const def = CONFIG.plants[p.type];
-  if (p.type === "mitsubana"){
+  if (def.sell){
     return plantSellValue(p) >= def.sell.peak * CONFIG.economy.peakValueThreshold;
   }
-  if (def.growth){
+  if (def.growth || def.growthByTime){
     return p.stage === 2;
   }
   return false;
@@ -1199,6 +1729,138 @@ function drawPlant(p){
       if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
     ctx.closePath(); ctx.fill();
+  } else if (p.type === "snapper"){
+    // クラシックなハエトリソウ: 茎+パクパクする顎
+    const bodyColor = p.bloated ? "#6b6b4a" : ["#8bc34a", "#66bb6a", "#2e7d32"][p.stage];
+    ctx.fillStyle = "#33691e"; ctx.fillRect(-2, 2, 4, 13);
+    const jawOpen = p.eatAnim > 0 ? 0.1 : 0.55;
+    const R = 6 + p.stage * 1.5;
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.ellipse(0, -3, R, R * 0.7, 0, Math.PI * (1 - jawOpen * 0.4), Math.PI * (2 + jawOpen * 0.4)); // 上顎
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(0, -1, R, R * 0.55, 0, 0, Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = "#b71c1c"; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let i = -2; i <= 2; i++){
+      ctx.moveTo(i * R * 0.35, -3 - jawOpen * 5);
+      ctx.lineTo(i * R * 0.35, -3 - jawOpen * 5 - 3);
+    }
+    ctx.stroke();
+  } else if (p.type === "mint"){
+    // 涼しげなミント: 葉のロゼット + 冷気の輝き
+    const glow = 0.5 + 0.3 * Math.sin(performance.now() / 400);
+    ctx.fillStyle = `rgba(128, 222, 234, ${glow * 0.35})`;
+    ctx.beginPath(); ctx.arc(0, 0, 13 + p.stage * 2, 0, Math.PI * 2); ctx.fill();
+    for (let i = 0; i < 4; i++){
+      const a = (Math.PI * 2 / 4) * i + Math.PI / 4;
+      ctx.beginPath();
+      ctx.fillStyle = ["#4db6ac", "#26a69a", "#00897b"][p.stage];
+      ctx.ellipse(Math.cos(a) * 5, Math.sin(a) * 5, 7 + p.stage, 3.5, a, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.beginPath(); ctx.fillStyle = "#e0f7fa"; ctx.arc(0, 0, 3 + p.stage * 0.6, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "sundew"){
+    // モウセンゴケ: 赤い触手+粘液のしずく
+    ctx.fillStyle = ["#e57373", "#ef5350", "#c62828"][p.stage];
+    for (let i = 0; i < 7; i++){
+      const a = (Math.PI * 2 / 7) * i;
+      const len = 8 + p.stage * 2;
+      ctx.beginPath();
+      ctx.ellipse(Math.cos(a) * len * 0.55, Math.sin(a) * len * 0.55, len * 0.5, 2, a, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.arc(Math.cos(a) * len, Math.sin(a) * len, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = ["#e57373", "#ef5350", "#c62828"][p.stage];
+    }
+    ctx.beginPath(); ctx.fillStyle = "#8d1f1f"; ctx.arc(0, 0, 3.5 + p.stage, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "dandelion"){
+    // ワタゲタンポポ: 茎の上のふわふわ綿毛
+    ctx.fillStyle = "#7cb342"; ctx.fillRect(-1.5, 2, 3, 13);
+    const R = 8 + p.stage * 2;
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.beginPath(); ctx.arc(0, -4, R, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 10; i++){
+      const a = (Math.PI * 2 / 10) * i + performance.now() / 3000;
+      ctx.beginPath();
+      ctx.moveTo(0, -4);
+      ctx.lineTo(Math.cos(a) * R, -4 + Math.sin(a) * R);
+      ctx.stroke();
+    }
+    ctx.beginPath(); ctx.fillStyle = "#fff9c4"; ctx.arc(0, -4, 3, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "chestnut"){
+    // バクダングリ: トゲトゲの実 + 点滅する導火線ランプ
+    ctx.beginPath(); ctx.fillStyle = "#8d6e63";
+    const spikes2 = 9, R2 = 10, r2 = 6.5;
+    for (let i = 0; i < spikes2 * 2; i++){
+      const rad = i % 2 === 0 ? R2 : r2;
+      const a = (Math.PI / spikes2) * i;
+      const px2 = Math.cos(a) * rad, py2 = Math.sin(a) * rad;
+      if (i === 0) ctx.moveTo(px2, py2); else ctx.lineTo(px2, py2);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = "#5d4037"; ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+    const blink = Math.sin(performance.now() / 200) > 0;
+    ctx.beginPath(); ctx.fillStyle = blink ? "#ff5252" : "#7f2222";
+    ctx.arc(0, 0, 2, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "lavender"){
+    // ラベンダー: 紫の穂 + ゆらめく香りの円
+    const aura = 0.25 + 0.15 * Math.sin(performance.now() / 500);
+    ctx.strokeStyle = `rgba(179, 157, 219, ${aura})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 21, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "#558b2f"; ctx.fillRect(-1.5, 0, 3, 15);
+    const tiers = 3 + p.stage;
+    for (let i = 0; i < tiers; i++){
+      ctx.beginPath();
+      ctx.fillStyle = ["#b39ddb", "#9575cd", "#7e57c2"][p.stage];
+      ctx.ellipse(0, -2 - i * 4.5, 5 - i * 0.8, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (p.type === "orchid"){
+    // スナイパーラン: 優雅な花 + 長い狙撃バレル
+    const angle = p.aimAngle != null ? p.aimAngle : -Math.PI / 2;
+    ctx.fillStyle = "#33691e"; ctx.fillRect(-1.5, 4, 3, 12);
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.fillStyle = "#eceff1";
+    ctx.fillRect(0, -1.5, 16 + p.stage * 3, 3);
+    ctx.fillStyle = "#ff8a65";
+    ctx.fillRect(14 + p.stage * 3, -2.5, 3, 5);
+    ctx.restore();
+    for (let i = 0; i < 5; i++){
+      const a = (Math.PI * 2 / 5) * i - Math.PI / 2;
+      ctx.beginPath();
+      ctx.fillStyle = ["#f8bbd0", "#f48fb1", "#ec407a"][p.stage];
+      ctx.ellipse(Math.cos(a) * 5, Math.sin(a) * 5, 5.5, 3, a, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.beginPath(); ctx.fillStyle = "#fce4ec"; ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill();
+  } else if (p.type === "rafflesia"){
+    // ラフレシア: 巨大な赤い5弁花 + 斑点
+    const R3 = 11 + p.stage * 2.5;
+    for (let i = 0; i < 5; i++){
+      const a = (Math.PI * 2 / 5) * i - Math.PI / 2;
+      ctx.beginPath();
+      ctx.fillStyle = p.bloated ? "#8d3a32" : ["#e57373", "#d32f2f", "#b71c1c"][p.stage];
+      ctx.ellipse(Math.cos(a) * R3 * 0.6, Math.sin(a) * R3 * 0.6, R3 * 0.55, R3 * 0.4, a, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = "rgba(255,224,178,0.8)";
+    for (let i = 0; i < 8; i++){
+      const a = (Math.PI * 2 / 8) * i;
+      ctx.beginPath();
+      ctx.arc(Math.cos(a) * R3 * 0.62, Math.sin(a) * R3 * 0.62, 1.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.beginPath(); ctx.fillStyle = "#4e1414"; ctx.arc(0, 0, R3 * 0.35, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = "#7a2020"; ctx.arc(0, 0, R3 * 0.22, 0, Math.PI * 2); ctx.fill();
   }
 
   if (isRooted(p)){
@@ -1278,6 +1940,154 @@ function drawBug(b){
     ctx.beginPath(); ctx.arc(-b.size * 0.55, -wig * 0.5, b.size * 0.7, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(0, 0, b.size * 0.85, 0, Math.PI * 2); ctx.fill();
     drawCuteEyes(b.size * 0.85, 0.4);
+  } else if (b.type === "hornet"){
+    const flap = Math.sin(performance.now() / 45 + b.x) * 3.5;
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    ctx.beginPath(); ctx.ellipse(-b.size * 0.7, -flap - 2, b.size * 0.8, b.size * 0.3, 0.4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(b.size * 0.7, flap - 2, b.size * 0.8, b.size * 0.3, -0.4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffa000";
+    ctx.beginPath(); ctx.ellipse(0, 0, b.size * 1.1, b.size * 0.75, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#3e2723";
+    for (let i = -1; i <= 1; i++){
+      ctx.fillRect(i * b.size * 0.45 - 1.5, -b.size * 0.6, 3, b.size * 1.2);
+    }
+    // 尻の針
+    ctx.beginPath(); ctx.fillStyle = "#3e2723";
+    ctx.moveTo(b.size * 1.05, 0); ctx.lineTo(b.size * 1.5, 0); ctx.lineTo(b.size * 1.05, 2.5);
+    ctx.closePath(); ctx.fill();
+    drawCuteEyes(b.size * 0.8, 0.42);
+  } else if (b.type === "ant"){
+    ctx.fillStyle = "#d84315";
+    ctx.beginPath(); ctx.arc(-b.size * 0.9, 0, b.size * 0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, b.size * 0.55, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(b.size * 0.85, 0, b.size * 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#8d2f0b"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(b.size * 1.1, -b.size * 0.5); ctx.lineTo(b.size * 1.5, -b.size * 0.95);
+    ctx.moveTo(b.size * 1.3, -b.size * 0.4); ctx.lineTo(b.size * 1.7, -b.size * 0.7);
+    ctx.stroke();
+    ctx.save(); ctx.translate(b.size * 0.85, 0); drawCuteEyes(b.size * 0.7, 0.4); ctx.restore();
+  } else if (b.type === "grasshopper"){
+    const hop = Math.abs(Math.sin(performance.now() / 180 + b.x)) * 6;
+    ctx.translate(0, -hop);
+    ctx.fillStyle = "#7cb342";
+    ctx.beginPath(); ctx.ellipse(0, 0, b.size * 1.2, b.size * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+    // 後ろ脚
+    ctx.strokeStyle = "#558b2f"; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-b.size * 0.3, b.size * 0.3);
+    ctx.lineTo(-b.size * 1.0, -b.size * 0.5);
+    ctx.lineTo(-b.size * 1.3, b.size * 0.5 + hop);
+    ctx.stroke();
+    // 触角
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(b.size * 0.9, -b.size * 0.3); ctx.lineTo(b.size * 1.5, -b.size * 0.9);
+    ctx.stroke();
+    ctx.save(); ctx.translate(b.size * 0.6, -b.size * 0.1); drawCuteEyes(b.size * 0.6, 0.4); ctx.restore();
+  } else if (b.type === "pillbug"){
+    ctx.fillStyle = "#78909c";
+    ctx.beginPath(); ctx.ellipse(0, 0, b.size * 1.15, b.size * 0.8, 0, 0, Math.PI * 2); ctx.fill();
+    // 装甲の体節
+    ctx.strokeStyle = "#455a64"; ctx.lineWidth = 1.5;
+    for (let i = -2; i <= 2; i++){
+      ctx.beginPath();
+      ctx.moveTo(i * b.size * 0.38, -b.size * 0.72);
+      ctx.quadraticCurveTo(i * b.size * 0.45, 0, i * b.size * 0.38, b.size * 0.72);
+      ctx.stroke();
+    }
+    drawCuteEyes(b.size * 0.75, 0.42);
+  } else if (b.type === "bagworm"){
+    // 蓑(三角の袋)からちょこんと顔
+    ctx.fillStyle = "#8d6e63";
+    ctx.beginPath();
+    ctx.moveTo(0, -b.size * 1.2); ctx.lineTo(b.size * 0.9, b.size * 0.8); ctx.lineTo(-b.size * 0.9, b.size * 0.8);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#5d4037"; ctx.lineWidth = 1;
+    for (let i = 0; i < 3; i++){
+      ctx.beginPath();
+      ctx.moveTo(-b.size * (0.3 + i * 0.25), b.size * (0.1 + i * 0.25));
+      ctx.lineTo(b.size * (0.3 + i * 0.25), b.size * (0.1 + i * 0.25));
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#ffcc80";
+    ctx.beginPath(); ctx.arc(0, -b.size * 0.85, b.size * 0.45, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(0, -b.size * 0.85); drawCuteEyes(b.size * 0.45, 0.42); ctx.restore();
+  } else if (b.type === "snail"){
+    // 殻(渦巻き) + 体
+    ctx.fillStyle = "#ffe0b2";
+    ctx.beginPath(); ctx.ellipse(b.size * 0.2, b.size * 0.35, b.size * 1.1, b.size * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#a1724e";
+    ctx.beginPath(); ctx.arc(-b.size * 0.25, -b.size * 0.25, b.size * 0.8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#6d4c33"; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let a = 0; a < Math.PI * 4; a += 0.3){
+      const rr = b.size * 0.75 * (a / (Math.PI * 4));
+      const px3 = -b.size * 0.25 + Math.cos(a) * rr, py3 = -b.size * 0.25 + Math.sin(a) * rr;
+      if (a === 0) ctx.moveTo(px3, py3); else ctx.lineTo(px3, py3);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = "#d7a86e"; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(b.size * 0.9, 0); ctx.lineTo(b.size * 1.1, -b.size * 0.7);
+    ctx.moveTo(b.size * 1.1, 0.5); ctx.lineTo(b.size * 1.4, -b.size * 0.55);
+    ctx.stroke();
+    ctx.save(); ctx.translate(b.size * 0.95, b.size * 0.1); drawCuteEyes(b.size * 0.5, 0.42); ctx.restore();
+  } else if (b.type === "locust"){
+    const flap2 = Math.sin(performance.now() / 50 + b.y) * 3;
+    ctx.fillStyle = "rgba(220,255,200,0.5)";
+    ctx.beginPath(); ctx.ellipse(-b.size * 0.4, -flap2 - 2, b.size, b.size * 0.3, 0.25, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#9ccc65";
+    ctx.beginPath(); ctx.ellipse(0, 0, b.size * 1.15, b.size * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(b.size * 0.6, -b.size * 0.05); drawCuteEyes(b.size * 0.55, 0.4); ctx.restore();
+  } else if (b.type === "boss"){
+    // ヌシカブト: 巨大な角付きカブトムシ + 王冠
+    const stomp = Math.sin(performance.now() / 300) * 1.5;
+    ctx.translate(0, stomp);
+    ctx.fillStyle = "#4e342e";
+    ctx.beginPath(); ctx.ellipse(0, 0, b.size * 1.1, b.size * 0.85, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#6d4c41";
+    ctx.beginPath(); ctx.ellipse(0, -b.size * 0.15, b.size * 0.8, b.size * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+    // 角
+    ctx.strokeStyle = "#3e2723"; ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(b.size * 0.55, -b.size * 0.3);
+    ctx.quadraticCurveTo(b.size * 1.35, -b.size * 0.85, b.size * 1.15, -b.size * 1.35);
+    ctx.stroke();
+    // 王冠
+    ctx.fillStyle = "#ffd740";
+    ctx.beginPath();
+    const cy2 = -b.size * 0.95;
+    ctx.moveTo(-b.size * 0.45, cy2);
+    ctx.lineTo(-b.size * 0.45, cy2 - 6);
+    ctx.lineTo(-b.size * 0.22, cy2 - 2);
+    ctx.lineTo(0, cy2 - 7);
+    ctx.lineTo(b.size * 0.22, cy2 - 2);
+    ctx.lineTo(b.size * 0.45, cy2 - 6);
+    ctx.lineTo(b.size * 0.45, cy2);
+    ctx.closePath(); ctx.fill();
+    drawCuteEyes(b.size * 0.8, 0.4);
+  }
+  // 状態異常の表示
+  const now2 = performance.now();
+  if (now2 < b.slowUntil){
+    ctx.strokeStyle = "rgba(128,222,234,0.85)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, b.size + 3, 0, Math.PI * 2); ctx.stroke();
+  }
+  if (b.poison && now2 < b.poison.until){
+    ctx.fillStyle = "rgba(174,234,0,0.85)";
+    const bub = (now2 / 150) % 8;
+    ctx.beginPath(); ctx.arc(b.size * 0.5, -b.size - bub, 1.8, 0, Math.PI * 2); ctx.fill();
+  }
+  if (isStunned(b)){
+    ctx.fillStyle = "#ffd740";
+    for (let i = 0; i < 3; i++){
+      const a = now2 / 250 + (Math.PI * 2 / 3) * i;
+      ctx.beginPath();
+      ctx.arc(Math.cos(a) * (b.size + 4), -b.size * 0.6 + Math.sin(a) * 3, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
   ctx.restore();
   if (b.hp < b.maxHp){
@@ -1359,11 +2169,15 @@ function hexToRgba(hex, alpha){
 }
 
 function drawAttackRange(p){
-  if (p.type === "mitsubana") return;
   const def = CONFIG.plants[p.type];
   const stats = predationStats(p);
+  // 攻撃範囲(なければ地雷の爆風・バフ範囲を表示)
+  let range = stats ? stats.range : null;
+  if (!range && def.mine) range = def.mine.blastRange;
+  if (!range && def.boostByStage) range = CONFIG.grid.cell * 1.5;
+  if (!range) return;
   ctx.beginPath();
-  ctx.arc(p.x, p.y, stats.range, 0, Math.PI * 2);
+  ctx.arc(p.x, p.y, range, 0, Math.PI * 2);
   ctx.fillStyle = hexToRgba(def.color, 0.12);
   ctx.fill();
   ctx.strokeStyle = hexToRgba(def.color, 0.75);
@@ -1377,6 +2191,15 @@ function drawRangeEffect(e){
   const t = 1 - e.timer / e.maxTimer;       // 0 -> 1 over lifetime
   const fade = e.timer / e.maxTimer;         // 1 -> 0
   const ease = 1 - Math.pow(1 - t, 3);       // easeOutCubic for the ripple
+  if (e.lineTo){ // 対空攻撃などの攻撃線
+    ctx.beginPath();
+    ctx.moveTo(e.x, e.y);
+    ctx.lineTo(e.lineTo.x, e.lineTo.y);
+    ctx.strokeStyle = hexToRgba(e.color, 0.8 * fade);
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    return;
+  }
   // filled tint of the full range that fades out
   ctx.beginPath();
   ctx.arc(e.x, e.y, e.range, 0, Math.PI * 2);
@@ -1466,7 +2289,9 @@ function updateWaveBar(){
     : pct > 20
       ? "linear-gradient(90deg, #ffb300, #ffd740)"
       : "linear-gradient(90deg, #e53935, #ff7043)";
-  waveBarLabelEl.textContent = "次のウェーブまで " + Math.ceil(remaining) + "秒";
+  const nextTheme = themeFor(waveManager.waveNumber + 1);
+  const nextLabel = nextTheme === "boss" ? "ボス!!" : CONFIG.bugs[nextTheme].label;
+  waveBarLabelEl.textContent = "次: " + nextLabel + " まで " + Math.ceil(remaining) + "秒";
 }
 
 // ---------- Tooltip ----------
@@ -1518,11 +2343,13 @@ function updateTooltipContent(){
   const p = selectedPlant, def = CONFIG.plants[p.type];
   const val = plantSellValue(p);
   let stateLabel = "";
-  if (p.type === "mitsubana"){
+  if (def.sell){
     const t = (performance.now() - p.plantedAt) / 1000;
     stateLabel = t < def.sell.peakTime ? "成長中" : (t < def.sell.peakTime + 8 ? "満開(売り時!)" : "しおれ気味");
-  } else if (def.growth){
+  } else if (def.growth || def.growthByTime){
     stateLabel = ["幼体", "成体", "完熟"][p.stage] + (p.bloated ? "(満腹)" : "");
+  } else if (def.mine){
+    stateLabel = "待機中(触れると爆発)";
   } else {
     stateLabel = "壁";
   }
@@ -1544,7 +2371,11 @@ function maybeUpdateTooltip(){
 }
 
 // ---------- Palette / input ----------
-const PLANT_ORDER = ["mitsubana", "flytrap", "pitcher", "thorn"];
+const PLANT_ORDER = [
+  "mitsubana", "thorn", "snapper", "flytrap",
+  "mint", "dandelion", "sundew", "pitcher",
+  "chestnut", "lavender", "orchid", "rafflesia"
+];
 function getBaseCombatStats(type){
   const def = CONFIG.plants[type];
   if (!def.predation) return null;
@@ -1555,18 +2386,22 @@ function getBaseCombatStats(type){
     range: Math.round((base.range / CONFIG.grid.cell) * 10) / 10
   };
 }
+function plantInfoLine(type){
+  const def = CONFIG.plants[type];
+  const stats = getBaseCombatStats(type);
+  let line = def.label + " (¥" + def.cost + ") — " + def.desc;
+  if (stats) line += " / 威力" + stats.dmg + "・" + stats.speed + "回/秒・射程" + stats.range + "マス";
+  if (def.mine) line += " / 威力" + def.mine.dmg + "・爆風" + Math.round(def.mine.blastRange / CONFIG.grid.cell * 10) / 10 + "マス";
+  if (def.boostByStage) line += " / 隣接攻撃力x" + def.boostByStage[0] + "〜x" + def.boostByStage[2];
+  return line;
+}
+function isPlantUnlocked(type){
+  return waveManager.waveNumber >= (CONFIG.plants[type].unlockWave || 0);
+}
 function buildPalette(){
   paletteEl.innerHTML = "";
   PLANT_ORDER.forEach(type => {
     const def = CONFIG.plants[type];
-    const stats = getBaseCombatStats(type);
-    const statsHtml = stats
-      ? '<div class="pstats">' +
-          '<span>威力<b> ' + stats.dmg + '</b></span>' +
-          '<span>速度<b> ' + stats.speed + '</b>/秒</span>' +
-          '<span>射程<b> ' + stats.range + '</b>マス</span>' +
-        '</div>'
-      : '';
     const btn = document.createElement("div");
     btn.className = "palette-btn";
     btn.dataset.type = type;
@@ -1574,10 +2409,10 @@ function buildPalette(){
       '<div class="swatch" style="background:' + def.color + '"></div>' +
       '<div class="pname">' + def.label + '</div>' +
       '<div class="pcost">¥' + def.cost + '</div>' +
-      '<div class="pdesc">' + def.desc + '</div>' +
-      statsHtml;
+      '<div class="plock">W' + (def.unlockWave || 0) + '解禁</div>';
     btn.addEventListener("click", () => {
       if (gameState !== "playing") return;
+      if (!isPlantUnlocked(type)) return;
       selectedPlacementType = (selectedPlacementType === type) ? null : type;
       hideTooltip();
       updatePaletteHighlight();
@@ -1588,9 +2423,18 @@ function buildPalette(){
 function updatePaletteHighlight(){
   document.querySelectorAll(".palette-btn").forEach(btn => {
     const type = btn.dataset.type;
+    const unlocked = isPlantUnlocked(type);
     btn.classList.toggle("selected", selectedPlacementType === type);
-    btn.classList.toggle("disabled", money < CONFIG.plants[type].cost);
+    btn.classList.toggle("disabled", !unlocked || money < CONFIG.plants[type].cost);
+    btn.classList.toggle("locked", !unlocked);
   });
+  const infoEl = document.getElementById("plantInfo");
+  if (selectedPlacementType){
+    infoEl.textContent = plantInfoLine(selectedPlacementType);
+    infoEl.style.display = "block";
+  } else {
+    infoEl.style.display = "none";
+  }
 }
 
 function onCanvasClick(e){
@@ -1618,6 +2462,12 @@ function onCanvasClick(e){
 canvas.addEventListener("click", onCanvasClick);
 debugChk.addEventListener("change", () => { debugSmell = debugChk.checked; });
 
+let gameSpeed = 1;
+document.getElementById("speedBtn").addEventListener("click", () => {
+  gameSpeed = gameSpeed === 1 ? 2 : 1;
+  document.getElementById("speedBtn").textContent = gameSpeed === 1 ? "▶ 1x" : "▶▶ 2x";
+});
+
 document.getElementById("startBtn").addEventListener("click", () => {
   getAudioCtx();
   instructionsEl.style.display = "none";
@@ -1637,6 +2487,7 @@ function resetGame(){
   projectiles = [];
   plantingEffects = [];
   rangeEffects = [];
+  pendingBugs = [];
   plantGrid = makeGrid();
   smellField = new Float32Array(CONFIG.grid.cols * CONFIG.grid.rows);
   selectedPlant = null;
@@ -1650,6 +2501,8 @@ function resetGame(){
   waveManager.spawnedCount = 0;
   waveManager.totalToSpawn = 0;
   waveManager.spawnTimer = 0;
+  waveManager.bossPending = false;
+  waveManager.seenSpecies = {};
   gameOverEl.style.display = "none";
   gameState = "playing";
   updatePaletteHighlight();
@@ -1657,13 +2510,17 @@ function resetGame(){
 
 buildPalette();
 updatePaletteHighlight();
+(function(){
+  const best = loadHighScore();
+  if (best > 0) document.getElementById("titleBest").textContent = "ベストスコア: ¥" + best;
+})();
 
 let lastTs = 0;
 function frame(ts){
   if (!lastTs) lastTs = ts;
   let dt = (ts - lastTs) / 1000;
   lastTs = ts;
-  dt = Math.min(dt, 0.05);
+  dt = Math.min(dt, 0.05) * gameSpeed;
   if (gameState === "playing") update(dt);
   render();
   requestAnimationFrame(frame);
