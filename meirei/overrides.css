@@ -3,6 +3,36 @@
   display: block;
 }
 
+.intro {
+  display: flex;
+  align-items: center;
+  padding: clamp(32px, 6vw, 112px);
+}
+
+.intro-copy {
+  position: relative;
+  z-index: 2;
+  left: auto;
+  top: auto;
+  transform: none;
+  width: min(540px, 46vw);
+  max-height: calc(100dvh - 64px);
+}
+
+.intro h1 {
+  flex-wrap: nowrap;
+  font-size: clamp(72px, 8.5vw, 148px);
+  line-height: .78;
+}
+
+.intro .lead {
+  margin: clamp(22px, 4vh, 34px) 0 clamp(15px, 2.5vh, 25px);
+}
+
+.intro .choice {
+  margin: 0 0 18px;
+}
+
 .lyric-panel {
   top: 30%;
   bottom: auto;
@@ -28,6 +58,21 @@
     padding: 15px 14px;
   }
 
+  .intro {
+    padding: 7vw;
+  }
+
+  .intro-copy {
+    left: auto;
+    top: auto;
+    width: min(86vw, 540px);
+    max-height: calc(100dvh - 14vw);
+  }
+
+  .intro h1 {
+    font-size: clamp(68px, 22vw, 112px);
+  }
+
   .lyric-panel {
     top: 30%;
     bottom: auto;
@@ -40,5 +85,37 @@
 
   .lyric-panel p {
     font-size: clamp(23px, 6vw, 34px);
+  }
+}
+
+@media (min-width: 761px) and (max-height: 720px) {
+  .intro {
+    padding-block: 26px;
+  }
+
+  .intro-copy {
+    max-height: calc(100dvh - 52px);
+  }
+
+  .intro h1 {
+    font-size: clamp(64px, 9vw, 110px);
+  }
+
+  .intro .eyebrow {
+    margin-bottom: 8px;
+  }
+
+  .intro .lead {
+    margin: 18px 0 13px;
+    line-height: 1.5;
+  }
+
+  .intro .choice {
+    margin-bottom: 12px;
+  }
+
+  .intro .primary-button span,
+  .intro .primary-button i {
+    padding-block: 12px;
   }
 }
