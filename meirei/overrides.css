@@ -1,0 +1,44 @@
+/* Layout refinements kept separate from the compact base stylesheet. */
+.hud {
+  display: block;
+}
+
+.lyric-panel {
+  top: 30%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: min(940px, 82vw);
+  text-shadow: 0 3px 14px #000, 0 0 28px rgba(0, 0, 0, .9);
+}
+
+.lyric-panel small {
+  font: 700 13px Consolas, monospace;
+  letter-spacing: .3em;
+}
+
+.lyric-panel p {
+  margin: 10px 0;
+  font-size: clamp(27px, 3.2vw, 46px);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+@media (max-width: 760px) {
+  .hud {
+    padding: 15px 14px;
+  }
+
+  .lyric-panel {
+    top: 30%;
+    bottom: auto;
+    width: 94vw;
+  }
+
+  .lyric-panel small {
+    font-size: 11px;
+  }
+
+  .lyric-panel p {
+    font-size: clamp(23px, 6vw, 34px);
+  }
+}
