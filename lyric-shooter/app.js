@@ -878,7 +878,7 @@ async function analyzeAudioTiming(lines) {
     window.webkitAudioContext;
   if (!DecodeContext) return [];
 
-  const response = await fetch("./assets/bgm.wav", { cache: "force-cache" });
+    const response = await fetch("./assets/bgm.mp3", { cache: "force-cache" });
   if (!response.ok) return [];
   const arrayBuffer = await response.arrayBuffer();
   const context =

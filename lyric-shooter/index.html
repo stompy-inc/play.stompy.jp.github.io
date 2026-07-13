@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>滅びかけの街で | Lyric Starflight</title>
+    <meta
+      name="description"
+      content="3Dの三人称視点で機体を操作し、曲に合わせて飛来する歌詞へぶつかっていくブラウザゲーム。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <canvas id="game" aria-label="滅びかけの街で lyric starflight"></canvas>
+
+      <section class="hud" aria-label="game status">
+        <div class="metric">
+          <strong id="score">0</strong>
+          <span>PASS</span>
+        </div>
+        <div class="track-status">
+          <strong>滅びかけの街で</strong>
+          <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+        </div>
+        <div class="metric align-right">
+          <strong id="combo">0%</strong>
+          <span>GAUGE</span>
+        </div>
+      </section>
+
+      <section class="lower-hud" aria-label="play controls">
+        <div class="timebox">
+          <span id="timeNow">0:00</span>
+          <span id="passCount">0/0</span>
+        </div>
+        <div class="button-row">
+          <button id="pauseBtn" type="button" aria-label="pause">II</button>
+          <button id="restartBtn" type="button" aria-label="restart">↻</button>
+          <button id="muteBtn" type="button" aria-label="mute">♪</button>
+        </div>
+      </section>
+
+      <div id="mobileJoystick" class="mobile-joystick" aria-label="mobile flight stick">
+        <div class="joystick-base" aria-hidden="true">
+          <div id="joystickKnob" class="joystick-knob"></div>
+        </div>
+      </div>
+
+      <section id="overlay" class="overlay" aria-live="polite">
+        <div class="title-card">
+          <p>LYRIC STARFLIGHT</p>
+          <h1>滅びかけの街で</h1>
+          <button id="startBtn" type="button">START</button>
+          <div id="resultLine" class="result-line"></div>
+        </div>
+      </section>
+
+      <audio id="bgm" preload="auto" src="./assets/bgm.mp3"></audio>
+      <script type="text/plain" id="lyricsFallback">
+星々は疾うに燃え尽きていた
+誰も、方角を信じなかった
+駅前の時計塔だけが
+昨日のまま、時を閉ざしている
+
+君は笑って、嘘を畳んだ
+綺麗なまま棄てられるように
+僕はそれを拾い上げて
+名前の無い箱に仕舞った
+
+もしも、祈りが罪ならば
+沈黙は赦しになるだろうか
+
+滅びかけの街で
+僕ら、優しい戦争をしていた
+抱きしめる度に遠ざかる
+その温度だけを信じて
+
+錆びた空の下で
+君の影が花のように崩れた
+忘れることも出来ないまま
+明日だけが、また生まれてく
+
+古い神さまは撤去された
+区画整理の朝だった
+祭壇の跡には自販機
+冷えた光が、喉を潤す
+
+誰かが残したパスワードで
+天国の門を開けてみた
+白い画面に映るのは
+生きていた頃の僕らだけ
+
+もしも、愛が記録なら
+消去も救いと呼べるだろうか
+
+滅びかけの街で
+僕ら、正しい孤独を選んだ
+触れないために差し伸べた
+その指先だけが震えて
+
+燃えさしの季節に
+君の声が雨のように残った
+終わることすら出来ないまま
+夜だけが、また深くなる
+
+戦わなかった勇者たち
+帰るはずもない聖者たち
+誰にも読まれない遺書の上
+春は遠慮無く咲くだろう
+
+それでも、君が呼ぶなら
+地獄の底で靴を揃える
+僕の身体が無くなっても
+この傷だけは、君を覚えてる
+
+滅びきった街で
+僕ら、最後の嘘を愛した
+真実なんて要らないと
+言えるほどには弱くなくて
+
+名も無き空の下で
+君の涙だけが蛍光灯のようにちらついた
+忘れることを救いにはしない
+赦されることも望まないで
+
+ただ、もう一度だけ
+君と同じ夢に堕ちて
+目醒める前の世界で
+僕ら、静かに息をする
+      </script>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
